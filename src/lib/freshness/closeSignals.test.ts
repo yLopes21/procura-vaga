@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { classifyJobStatus } from "./closeSignals";
+import { classifyJobStatus, toDbStatus } from "./closeSignals";
 
 const base = {
   httpStatus: 200,
@@ -89,13 +89,64 @@ describe("classifyJobStatus", () => {
     ).toBe("closed");
   });
 
-  it("mesma URL, conteúdo válido → open", () => {
+  it("mesma URL, COM CTA de candidatura → open", () => {
     expect(
       classifyJobStatus({
         ...base,
         finalUrl: "https://boards.greenhouse.io/acme/jobs/123?utm=x",
-        bodyText: "Descrição completa da vaga e requisitos.",
+        bodyText: "Descrição completa da vaga. Candidate-se já!",
       }).status,
     ).toBe("open");
+  });
+
+  // PM-01 (régua agressiva): 200 sem marcador de fechamento E sem CTA → unknown,
+  // nunca 'open'. Exige sinal POSITIVO de vaga aberta.
+  it("conteúdo de vaga SEM CTA → unknown (não assume aberta)", () => {
+    expect(
+      classifyJobStatus({ ...base, bodyText: "Descrição completa da vaga e requisitos." }).status,
+    ).toBe("unknown");
+  });
+
+  it("CTA 'inscreva-se' → open", () => {
+    expect(
+      classifyJobStatus({ ...base, bodyText: "Inscreva-se para esta oportunidade." }).status,
+    ).toBe("open");
+  });
+
+  it("CTA em inglês 'apply now' → open", () => {
+    expect(classifyJobStatus({ ...base, bodyText: "Apply now to join our team." }).status).toBe(
+      "open",
+    );
+  });
+
+  it("shell de SPA vazio (sem CTA) → unknown", () => {
+    expect(classifyJobStatus({ ...base, bodyText: '<div id="root"></div>' }).status).toBe(
+      "unknown",
+    );
+  });
+
+  it("marcador novo 'oportunidade finalizada' → closed", () => {
+    expect(
+      classifyJobStatus({ ...base, bodyText: "Esta oportunidade foi finalizada. Candidate-se a outras." })
+        .status,
+    ).toBe("closed");
+  });
+
+  it("marcador novo EN 'no longer posted' → closed", () => {
+    expect(
+      classifyJobStatus({ ...base, bodyText: "This job is no longer posted. Apply to similar roles." })
+        .status,
+    ).toBe("closed");
+  });
+});
+
+// VF-04: o detector fala "open"; a coluna jobs.status fala "active".
+describe("toDbStatus (vocabulário detector → banco)", () => {
+  it.each([
+    ["open", "active"],
+    ["closed", "closed"],
+    ["unknown", "unknown"],
+  ] as const)("'%s' → '%s'", (input, expected) => {
+    expect(toDbStatus(input)).toBe(expected);
   });
 });

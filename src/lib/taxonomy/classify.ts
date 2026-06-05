@@ -9,6 +9,8 @@ export type Seniority = "junior" | "pleno" | "senior" | "unknown";
 
 const ESTAGIO = /est[áa]gi|\bintern(ship)?\b/i;
 const TRAINEE = /\btrainee\b|jovem aprendiz|\baprendiz\b/i;
+/** Termos de vínculo que sinalizam POSITIVAMENTE uma vaga efetiva. */
+const EFETIVO = /\befetiv|\bclt\b|full[-\s]?time|tempo integral|contrata[çc][ãa]o direta/i;
 
 export function classifyEmploymentType(title: string): EmploymentType {
   const t = title.trim();
@@ -22,8 +24,12 @@ export function classifyEmploymentType(title: string): EmploymentType {
   if (isEstagio) return "estagio";
   if (isTrainee) return "trainee";
 
-  // Sem marcador de estágio/trainee: é uma vaga efetiva (caso dominante).
-  return "efetivo";
+  // PM-02: sem marcador de estágio/trainee, só afirma "efetivo" com sinal
+  // POSITIVO — termo de vínculo OU senioridade detectável (júnior/pleno/sênior/
+  // gerente/lead). Sem sinal (ex.: "Programa de Talentos") → "unknown", para
+  // NUNCA rotular um estágio disfarçado como efetivo.
+  if (EFETIVO.test(t) || classifySeniority(t) !== "unknown") return "efetivo";
+  return "unknown";
 }
 
 const SENIOR = /s[êe]nior|\bsr\b|especialista|principal|\bstaff\b|\blead\b|l[íi]der|gerente|head\b/i;

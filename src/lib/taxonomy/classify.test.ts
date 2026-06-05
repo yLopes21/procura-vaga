@@ -10,15 +10,25 @@ describe("classifyEmploymentType", () => {
     ["Internship - Data", "estagio"],
     ["Programa Trainee 2026", "trainee"],
     ["Jovem Aprendiz Administrativo", "trainee"],
+    // efetivo SÓ com sinal positivo (senioridade ou termo de vínculo)
     ["Analista de Marketing Júnior", "efetivo"],
     ["Desenvolvedor Pleno", "efetivo"],
     ["Gerente de Vendas", "efetivo"],
+    ["Engenheiro de Dados Sênior", "efetivo"],
+    ["Desenvolvedor Full-time", "efetivo"],
+    ["Vaga Efetiva — Analista CLT", "efetivo"],
   ])("'%s' → %s", (title, expected) => {
     expect(classifyEmploymentType(title)).toBe(expected);
   });
 
-  it("não classifica 'internacional' como estágio (falso positivo)", () => {
-    expect(classifyEmploymentType("Vaga Internacional de Vendas")).toBe("efetivo");
+  // PM-02: sem sinal de estágio NEM de efetivo → unknown (nunca rotula errado).
+  it.each([
+    ["Vaga Internacional de Vendas", "unknown"],
+    ["Programa de Talentos 2026", "unknown"],
+    ["Banco de Talentos", "unknown"],
+    ["Oportunidade para Estudantes", "unknown"],
+  ])("ambíguo '%s' → %s (não vira 'efetivo' por padrão)", (title, expected) => {
+    expect(classifyEmploymentType(title)).toBe(expected);
   });
 
   it("sinais conflitantes (estágio + trainee) → unknown", () => {

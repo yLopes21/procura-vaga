@@ -19,6 +19,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",
     "@google/generative-ai": "^0.21.0",
+    "@napi-rs/canvas": "^1.0.0",
     "@neondatabase/serverless": "^0.10.4",
     "cheerio": "^1.0.0",
     "clsx": "^2.1.1",

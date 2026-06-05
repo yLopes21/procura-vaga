@@ -1,0 +1,80 @@
+{
+  "administracao": {
+    "label": "Administração",
+    "cineArea": "Negócios, administração e direito",
+    "keywords": ["administra", "gestão", "gestao", "business", "negócios", "negocios"],
+    "subareas": {
+      "financeiro": ["financ", "finanças", "controladoria", "fp&a", "fpa", "tesouraria", "contas a pagar", "contas a receber", "planejamento financeiro"],
+      "marketing": ["marketing", "growth", "branding", "mídia", "midia", "produto", "crm"],
+      "rh": ["recursos humanos", "rh", "people", "gente e gestão", "recrutamento", "talent", "departamento pessoal"],
+      "comercial": ["comercial", "vendas", "sales", "business development", "bdr", "sdr", "key account"],
+      "operacoes": ["operações", "operacoes", "supply", "logística", "logistica", "processos", "pmo", "projetos", "compras"]
+    }
+  },
+  "ciencias-contabeis": {
+    "label": "Ciências Contábeis",
+    "cineArea": "Negócios, administração e direito",
+    "keywords": ["contábil", "contabil", "contabilidade", "fiscal", "tributário", "tributario", "auditoria", "controladoria"],
+    "subareas": {}
+  },
+  "economia": {
+    "label": "Economia",
+    "cineArea": "Negócios, administração e direito",
+    "keywords": ["economia", "econômic", "economic", "research", "mercado de capitais", "investimentos", "macroeconomia"],
+    "subareas": {}
+  },
+  "engenharia-de-producao": {
+    "label": "Engenharia de Produção",
+    "cineArea": "Engenharia, produção e construção",
+    "keywords": ["produção", "producao", "processos", "supply", "logística", "logistica", "qualidade", "lean", "pcp"],
+    "subareas": {}
+  },
+  "direito": {
+    "label": "Direito",
+    "cineArea": "Negócios, administração e direito",
+    "keywords": ["jurídic", "juridic", "direito", "legal", "advocacia", "contratos", "compliance"],
+    "subareas": {}
+  },
+  "marketing": {
+    "label": "Marketing",
+    "cineArea": "Negócios, administração e direito",
+    "keywords": ["marketing", "growth", "branding", "social media", "conteúdo", "conteudo", "publicidade"],
+    "subareas": {}
+  },
+  "ciencia-da-computacao": {
+    "label": "Ciência da Computação",
+    "cineArea": "Computação e Tecnologias da Informação e Comunicação (TIC)",
+    "keywords": ["desenvolvedor", "software", "developer", "programador", "backend", "frontend", "full stack", "dados", "data"],
+    "subareas": {}
+  },
+  "sistemas-de-informacao": {
+    "label": "Sistemas de Informação",
+    "cineArea": "Computação e Tecnologias da Informação e Comunicação (TIC)",
+    "keywords": ["sistemas", "ti", "suporte", "software", "dados", "data", "analista de sistemas"],
+    "subareas": {}
+  },
+  "psicologia": {
+    "label": "Psicologia",
+    "cineArea": "Saúde e bem-estar",
+    "keywords": ["psicolog", "recursos humanos", "rh", "people", "saúde mental", "clínica", "clinica"],
+    "subareas": {}
+  },
+  "engenharia-civil": {
+    "label": "Engenharia Civil",
+    "cineArea": "Engenharia, produção e construção",
+    "keywords": ["civil", "obras", "construção", "construcao", "estrutural", "edificações", "edificacoes"],
+    "subareas": {}
+  },
+  "comunicacao-social": {
+    "label": "Comunicação Social",
+    "cineArea": "Artes e humanidades",
+    "keywords": ["comunicação", "comunicacao", "jornalismo", "publicidade", "social media", "assessoria", "conteúdo", "conteudo"],
+    "subareas": {}
+  },
+  "relacoes-internacionais": {
+    "label": "Relações Internacionais",
+    "cineArea": "Ciências sociais, comunicação e informação",
+    "keywords": ["relações internacionais", "relacoes internacionais", "comércio exterior", "comercio exterior", "trade", "foreign"],
+    "subareas": {}
+  }
+}

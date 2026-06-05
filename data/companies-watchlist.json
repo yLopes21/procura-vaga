@@ -1,0 +1,15 @@
+{
+  "_comment": "Fontes da coleta diária. ATS são por board/empresa (confirmados HTTP 200). Gupy é por termo de busca (portal BR). Ampliar conforme descobrir mais boards BR.",
+  "greenhouse": ["nubank", "quintoandar", "gympass"],
+  "lever": [],
+  "ashby": [],
+  "workable": [],
+  "gupyQueries": [
+    "estagio administracao",
+    "estagio financeiro",
+    "estagio marketing",
+    "estagio recursos humanos",
+    "jovem aprendiz administrativo",
+    "trainee administracao"
+  ]
+}

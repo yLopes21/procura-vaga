@@ -17,7 +17,8 @@ Adicione items com: data, descrição, severidade, e esforço estimado.
 
 | # | Data | Descrição | Severidade | Esforço | Status |
 |---|------|-----------|-----------|---------|--------|
-| 1 | [DATA] | [Descrição do débito] | 🔴/🟡/🟢 | [horas] | Pendente |
+| 1 | 2026-06-05 | Onda 3 (P2 review): `upsertJobs` retorna `newJobs.length` (tentativas), não rows realmente afetadas. Log já diz "tentativas"; para count real, capturar `rowCount` do batch. | 🟢 | ~1h | Pendente |
+| 2 | 2026-06-05 | Onda 3 (P3 review): `_comment` em `companies-watchlist.json` é convenção frágil; migrar para `"__meta"` fora do namespace de fontes se o JSON crescer. | 🟢 | ~15min | Pendente |
 
 ## Items Resolvidos
 

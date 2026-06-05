@@ -1,0 +1,40 @@
+{
+  "jobs": [
+    {
+      "id": 7977320,
+      "internal_job_id": 3462273,
+      "title": "AI and Agentic AI Risk Management Senior Specialist",
+      "absolute_url": "https://job-boards.greenhouse.io/nubank/jobs/7977320",
+      "location": {
+        "name": "USA, Miami; USA, Washington DC"
+      },
+      "updated_at": "2026-06-03T16:58:23-04:00",
+      "company_name": "Nubank",
+      "requisition_id": "7020"
+    },
+    {
+      "id": 7976871,
+      "internal_job_id": 3462091,
+      "title": "AML QA Analyst",
+      "absolute_url": "https://job-boards.greenhouse.io/nubank/jobs/7976871",
+      "location": {
+        "name": "Mexico, Mexico City"
+      },
+      "updated_at": "2026-06-02T12:41:15-04:00",
+      "company_name": "Nubank",
+      "requisition_id": "7018"
+    },
+    {
+      "id": 7673104,
+      "internal_job_id": 3266979,
+      "title": "Atención de Autoridades (SITI AA) - Regulatory Solutions Analyst ",
+      "absolute_url": "https://job-boards.greenhouse.io/nubank/jobs/7673104",
+      "location": {
+        "name": "Mexico, Mexico City"
+      },
+      "updated_at": "2026-05-21T07:59:26-04:00",
+      "company_name": "Nubank",
+      "requisition_id": "6339"
+    }
+  ]
+}

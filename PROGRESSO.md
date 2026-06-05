@@ -7,9 +7,9 @@
 ## Onde estamos AGORA
 
 - **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 12).
-- **HEAD:** Onda 4 (Auth) **commitada e verificada ao vivo** (login real funciona, intruso negado). Engine A+ literal LIGADO (handoff + telemetria em `.pipeline/`).
-- **Ponto de retomada:** **Onda 5 (UI shell mobile-first)** — busca curso/área/local/tipo + cards. Trilha PADRÃO + camada design + a11y.
-- **Suíte:** 142/142 verde · tsc/lint/build limpos.
+- **HEAD:** Onda 5 (UI busca Curso→Área) **commitada e verificada ao vivo**. Engine A+ literal LIGADO (handoffs em `.pipeline/`, run `a220b9f5`).
+- **Ponto de retomada:** **Onda 6 (validação no clique)** — `api/jobs/[id]/validate` (`classifyJobStatus`). Trilha CRÍTICA (core "nunca vaga morta").
+- **Suíte:** 153/153 verde · tsc/lint/build limpos.
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
 
 ## Como a Pipeline A+ executa cada onda
@@ -36,7 +36,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | 2b | `taxonomy/match` + `cv/semanticGuardrail` + `cv/pdfRoundtrip` | PADRÃO/CRÍTICA (guardrail) | 3 paralelas | `b20d8f0` | ✅ |
 | 3 | `daily.ts` + `toNewJob` + `listingDiff` + watchlist (ingestão idempotente + circuit-breaker + guarda coleta-vazia) | PADRÃO | `toNewJob` ∥ `listingDiff` | ✅ | ✅ **ao vivo: 487 vagas reais** |
 | 4 | Auth.js magic-link + middleware + allowlist (dupla, fail-closed) | CRÍTICA | 1 | ✅ | ✅ **login ao vivo: permitido entra, intruso negado (AccessDenied)** |
-| 5 | UI shell mobile-first: `page.tsx` (busca curso/área/local/tipo) + cards (badge tipo) + estados | PADRÃO + camada design + a11y | 1 | — | ☐ key-indep |
+| 5 | UI busca: **Curso (select taxonomia) → Área (chips dependentes)** + Estado + Tipo + cards/badge/estados | PADRÃO + design + a11y | 1 | ✅ | ✅ **ao vivo: curso→área dinâmico + filtro real** |
 | 6 | `api/jobs/search` + `api/jobs/[id]/validate` (validação no clique) | CRÍTICA (`validate` = core "nunca vaga morta") | search ∥ validate | — | ☐ key-indep |
 | 7 | **Scrapers BR seletivos** `scrape/{vagas,infojobs,catho}.ts` (HTML público, kill-switch por fonte) | PADRÃO | 3 paralelas | — | ☐ **key-indep** (scraping não usa chave) |
 | 8 | `sources/{adzuna,jooble,jsearch}` agregadores (Google for Jobs cobre LinkedIn/Indeed) | PADRÃO | 3 paralelas | — | ☐ KEY-DEP (Jooble ✅; JSearch 403/Adzuna pend.) |
@@ -95,6 +95,7 @@ Preencher no `.env.local` (já tem Neon + AUTH_SECRET). Sem elas, o código exis
 - **CV do perfil:** salvo na conta privada (com botão apagar) — default aceito; efêmero disponível se pedir.
 - **Garantia central:** nunca exibir vaga fechada → validação no clique (`classifyJobStatus`).
 - **Sourcing HÍBRIDO** (2026-06-05): base = Gupy (direto ✅) + Google for Jobs/JSearch + Adzuna + Jooble + ATS; **scrapers BR seletivos** (Vagas.com, InfoJobs, Catho) na Onda 7; **LinkedIn/Indeed via Google for Jobs**, NÃO scraping direto (anti-bot pesado em 2026). Corrige o drift que cortou os scrapers do `PLANEJAMENTO.md` sem registro.
+- **Busca por Curso→Área** (2026-06-05): a busca NÃO é texto livre. **Curso** = select dos 12 cursos da taxonomia (`taxonomy-top20.json`); **Área** = chips múltiplos **dependentes do curso** (ex.: Administração → Financeiro/Marketing/RH/Comercial/Operações). Filtro via `keywordsForAreas(curso, áreas)` no `title_norm`. Áreas pré-definidas por curso; ampliar `subareas` dos demais cursos é dívida (hoje só Administração tem subáreas).
 
 ## Como retomar (comando)
 

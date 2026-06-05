@@ -22,6 +22,8 @@ Adicione items com: data, descrição, severidade, e esforço estimado.
 | 3 | 2026-06-05 | Onda 4 (review): `sendMagicLink` (server action de login) sem teste automatizado. Cobrir os 3 caminhos (sucesso, AuthError, erro inesperado). | 🟡 | ~1h | Pendente |
 | 4 | 2026-06-05 | Onda 4 (review): endpoint direto `/api/auth/signin/resend` revela `AccessDenied` para email fora da allowlist (a UI/server action já não enumera). Inócuo p/ app de 1 usuário; endurecer só se virar multiusuário. | 🟢 | ~30min | Pendente |
 | 5 | 2026-06-05 | Onda 4 (verif. visual): `/login` gera 5 console 404 (`manifest.json` + `favicon.ico`). Assets ausentes, não-funcionais. Resolver na Onda 12 (PWA cria o manifest) + adicionar `app/icon`. | 🟢 | ~20min | Pendente |
+| 6 | 2026-06-05 | Onda 5 (P2 review): busca sem índice composto `(status, employment_type)`; `ilike` sem `pg_trgm` GIN. OK p/ catálogo pequeno; revisar se passar de ~50k linhas. | 🟢 | ~1h | Pendente |
+| 7 | 2026-06-05 | Onda 5: só `administracao` tem `subareas` no `taxonomy-top20.json`. Popular subáreas dos outros 11 cursos (área dependente fica vazia neles hoje). | 🟡 | ~2h | Pendente |
 
 ## Items Resolvidos
 

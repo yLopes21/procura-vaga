@@ -1,4 +1,5 @@
 import taxonomyData from "../../../data/taxonomy-top20.json";
+import { norm } from "@/lib/utils/norm";
 
 /**
  * Taxonomia curso → área CINE → keywords (+ subáreas), usada para casar o perfil
@@ -13,9 +14,6 @@ interface CourseEntry {
 }
 
 const taxonomy = taxonomyData as Record<string, CourseEntry>;
-
-const norm = (s: string): string =>
-  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 export interface ProfileMatch {
   course: string;
@@ -32,6 +30,19 @@ export function keywordsFor(course: string, subarea?: string): string[] {
   if (!entry) return [];
   const sub = subarea ? (entry.subareas[subarea] ?? []) : [];
   return [...entry.keywords, ...sub];
+}
+
+/**
+ * Keywords para a busca por curso + N áreas (seletor dependente da UI):
+ * - sem áreas → keywords gerais do curso (amplo);
+ * - com áreas → união das keywords das áreas selecionadas (específico).
+ * Vazio se o curso não existe.
+ */
+export function keywordsForAreas(course: string, areas: string[]): string[] {
+  const entry = taxonomy[course];
+  if (!entry) return [];
+  if (areas.length === 0) return entry.keywords;
+  return areas.flatMap((a) => entry.subareas[a] ?? []);
 }
 
 /** O título da vaga casa o perfil se contém alguma keyword (curso ou sub-área). */

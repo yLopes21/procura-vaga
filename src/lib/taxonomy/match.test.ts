@@ -1,5 +1,21 @@
 import { describe, it, expect } from "vitest";
-import { cineAreaFor, keywordsFor, titleMatchesProfile } from "./match";
+import { cineAreaFor, keywordsFor, keywordsForAreas, titleMatchesProfile } from "./match";
+
+describe("keywordsForAreas (múltiplas áreas dependentes do curso)", () => {
+  it("sem áreas → keywords gerais do curso", () => {
+    expect(keywordsForAreas("administracao", [])).toContain("administra");
+  });
+
+  it("com áreas → união das keywords das áreas selecionadas", () => {
+    const kws = keywordsForAreas("administracao", ["marketing", "rh"]);
+    expect(kws).toContain("growth"); // de marketing
+    expect(kws).toContain("recrutamento"); // de rh
+  });
+
+  it("curso inexistente → vazio", () => {
+    expect(keywordsForAreas("xyz", ["marketing"])).toEqual([]);
+  });
+});
 
 describe("taxonomia curso → área → keywords", () => {
   it("cineAreaFor resolve a área CINE do curso", () => {

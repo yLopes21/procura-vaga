@@ -1,0 +1,47 @@
+{
+  "data": [
+    {
+      "id": 11428220,
+      "name": "Estágio em Administração - Barra Funda/SP",
+      "careerPageName": "Ecolab",
+      "type": "vacancy_type_internship",
+      "publishedDate": "2026-06-03T16:58:26.046Z",
+      "city": "São Paulo",
+      "state": "São Paulo",
+      "country": "Brasil",
+      "jobUrl": "https://ecolab.gupy.io/job/eyJqb2JJZCI6MTE0MjgyMjAsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=?jobBoardSource=gupy_portal",
+      "isRemoteWork": false,
+      "workplaceType": "hybrid"
+    },
+    {
+      "id": 11425861,
+      "name": "Estágio em Administração - PC4G",
+      "careerPageName": "Nube - Vagas ",
+      "type": "vacancy_type_internship",
+      "publishedDate": "2026-06-03T14:00:23.192Z",
+      "city": "São Paulo",
+      "state": "São Paulo",
+      "country": "Brasil",
+      "jobUrl": "https://nubevagasefetivas.gupy.io/job/eyJqb2JJZCI6MTE0MjU4NjEsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=?jobBoardSource=gupy_portal",
+      "isRemoteWork": false,
+      "workplaceType": "on-site"
+    },
+    {
+      "id": 11418756,
+      "name": "0802 - Estágio Nível Superior - Administração e Áreas afins - Sede Administrativa - Campo Verde/MT | Sicredi Vale do Cerrado",
+      "careerPageName": "Sicredi",
+      "type": "vacancy_type_internship",
+      "publishedDate": "2026-06-02T18:58:22.553Z",
+      "city": "Campo Verde",
+      "state": "Mato Grosso",
+      "country": "Brasil",
+      "jobUrl": "https://sicredi.gupy.io/job/eyJqb2JJZCI6MTE0MTg3NTYsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=?jobBoardSource=gupy_portal",
+      "isRemoteWork": false,
+      "workplaceType": "on-site"
+    }
+  ],
+  "pagination": {
+    "offset": 0,
+    "limit": 3
+  }
+}

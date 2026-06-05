@@ -20,6 +20,12 @@ export const rawJobSchema = z.object({
   locationRaw: z.string().nullable(),
   /** ISO da última atualização na fonte, se exposto. */
   updatedAt: z.string().nullable(),
+  /**
+   * Dica de tipo de vínculo quando a fonte JÁ o expõe (ex.: Gupy traz
+   * `vacancy_type_internship`). Opcional — connectors que só têm o título
+   * deixam ausente, e a ingestão cai no classifyEmploymentType(title).
+   */
+  employmentTypeHint: z.enum(["estagio", "trainee", "efetivo"]).nullish(),
 });
 
 export type RawJobFromATS = z.infer<typeof rawJobSchema>;

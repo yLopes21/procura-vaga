@@ -7,9 +7,9 @@
 ## Onde estamos AGORA
 
 - **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 12).
-- **HEAD:** Onda 3 (ingestão) **commitada e verificada ao vivo** (487 vagas reais no Neon).
-- **Ponto de retomada:** **Onda 4 (Auth.js magic-link)** — trilha CRÍTICA (segurança). Chaves Resend/Gemini/Jooble ✅; JSearch (403, falta subscription) e Adzuna pendentes.
-- **Suíte:** 137/137 verde · tsc/lint/build limpos.
+- **HEAD:** Onda 4 (Auth) **commitada e verificada ao vivo** (login real funciona, intruso negado). Engine A+ literal LIGADO (handoff + telemetria em `.pipeline/`).
+- **Ponto de retomada:** **Onda 5 (UI shell mobile-first)** — busca curso/área/local/tipo + cards. Trilha PADRÃO + camada design + a11y.
+- **Suíte:** 142/142 verde · tsc/lint/build limpos.
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
 
 ## Como a Pipeline A+ executa cada onda
@@ -35,17 +35,18 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | 2a | `jobs/location` + `jobs/dedup` | PADRÃO (TDD) | 2 paralelas | `d80e1ae` | ✅ |
 | 2b | `taxonomy/match` + `cv/semanticGuardrail` + `cv/pdfRoundtrip` | PADRÃO/CRÍTICA (guardrail) | 3 paralelas | `b20d8f0` | ✅ |
 | 3 | `daily.ts` + `toNewJob` + `listingDiff` + watchlist (ingestão idempotente + circuit-breaker + guarda coleta-vazia) | PADRÃO | `toNewJob` ∥ `listingDiff` | ✅ | ✅ **ao vivo: 487 vagas reais** |
-| 4 | Auth.js magic-link + `middleware` + allowlist 1 email | CRÍTICA | 1 | — | ☐ código key-indep; ao-vivo precisa `RESEND` |
+| 4 | Auth.js magic-link + middleware + allowlist (dupla, fail-closed) | CRÍTICA | 1 | ✅ | ✅ **login ao vivo: permitido entra, intruso negado (AccessDenied)** |
 | 5 | UI shell mobile-first: `page.tsx` (busca curso/área/local/tipo) + cards (badge tipo) + estados | PADRÃO + camada design + a11y | 1 | — | ☐ key-indep |
 | 6 | `api/jobs/search` + `api/jobs/[id]/validate` (validação no clique) | CRÍTICA (`validate` = core "nunca vaga morta") | search ∥ validate | — | ☐ key-indep |
-| 7 | `sources/{adzuna,jooble,jsearch}` (agregadores) | PADRÃO | **3 paralelas** | — | ☐ **KEY-DEP** |
-| 8 | `cv/tailor` (adapter LLM gemini\|anthropic\|groq) + `api/cv/tailor` | CRÍTICA (anti-invenção) | 1 | — | ☐ **KEY-DEP** (`GEMINI`) |
-| 9 | `notify/digest` + `.github/workflows/cron-diario.yml` | PADRÃO | 1 | — | ☐ **KEY-DEP** (`RESEND`) |
-| 10 | `api/recruiter/draft` (link genérico + rascunho) | LITE | 1 | — | ☐ key-indep |
-| 11 | PWA (`public/manifest.json` + service worker) | LITE-PADRÃO + a11y | 1 | — | ☐ key-indep |
-| 12 | Repo GitHub + push + Actions secrets + deploy Vercel + env prod + verificação READY + GET | CRÍTICA (produção) | 1 | — | ☐ |
+| 7 | **Scrapers BR seletivos** `scrape/{vagas,infojobs,catho}.ts` (HTML público, kill-switch por fonte) | PADRÃO | 3 paralelas | — | ☐ **key-indep** (scraping não usa chave) |
+| 8 | `sources/{adzuna,jooble,jsearch}` agregadores (Google for Jobs cobre LinkedIn/Indeed) | PADRÃO | 3 paralelas | — | ☐ KEY-DEP (Jooble ✅; JSearch 403/Adzuna pend.) |
+| 9 | `cv/tailor` (adapter LLM gemini\|anthropic\|groq) + `api/cv/tailor` | CRÍTICA (anti-invenção) | 1 | — | ☐ KEY-DEP (`GEMINI` ✅; aguarda perfil do Rodrigo) |
+| 10 | `notify/digest` + `.github/workflows/cron-diario.yml` | PADRÃO | 1 | — | ☐ KEY-DEP (`RESEND` ✅) |
+| 11 | `api/recruiter/draft` (link genérico + rascunho) | LITE | 1 | — | ☐ key-indep |
+| 12 | PWA (`public/manifest.json` + service worker) | LITE-PADRÃO + a11y | 1 | — | ☐ key-indep |
+| 13 | Repo GitHub + push + Actions secrets + deploy Vercel + env prod + verificação READY + GET | CRÍTICA (produção, GATE humano) | 1 | — | ☐ |
 
-**Ordem de retomada:** fechar **3** → seguir key-independent **4 → 5 → 6** (já entregam app logável + busca + garantia no clique) → key-dependent **7 → 8 → 9** (após as chaves) → **10 → 11** → **12** (deploy).
+**Ordem de retomada:** **4 (auth)** → **5 (UI)** → **6 (busca + validação no clique)** → **7 (scrapers BR, key-indep)** → **8 (agregadores)** → **9 (CV)** → **10 (digest)** → **11 (recruiter)** → **12 (PWA)** → **13 (deploy — GATE humano)**.
 
 ## Onda 3 — fechar (retomada imediata)
 
@@ -93,6 +94,7 @@ Preencher no `.env.local` (já tem Neon + AUTH_SECRET). Sem elas, o código exis
 - **LLM do CV:** Gemini (grátis) por padrão; código agnóstico (anthropic|groq alternáveis).
 - **CV do perfil:** salvo na conta privada (com botão apagar) — default aceito; efêmero disponível se pedir.
 - **Garantia central:** nunca exibir vaga fechada → validação no clique (`classifyJobStatus`).
+- **Sourcing HÍBRIDO** (2026-06-05): base = Gupy (direto ✅) + Google for Jobs/JSearch + Adzuna + Jooble + ATS; **scrapers BR seletivos** (Vagas.com, InfoJobs, Catho) na Onda 7; **LinkedIn/Indeed via Google for Jobs**, NÃO scraping direto (anti-bot pesado em 2026). Corrige o drift que cortou os scrapers do `PLANEJAMENTO.md` sem registro.
 
 ## Como retomar (comando)
 

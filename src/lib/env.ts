@@ -10,7 +10,7 @@ const schema = z.object({
   // Banco (Neon)
   DATABASE_URL: z.string().optional(),
   // Auth
-  AUTH_SECRET: z.string().optional(),
+  AUTH_SECRET: process.env.NODE_ENV === "production" ? z.string().min(32) : z.string().optional(),
   AUTH_URL: z.string().optional(),
   ALLOWED_EMAIL: z.string().email().optional(),
   // Email (Resend)

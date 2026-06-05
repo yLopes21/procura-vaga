@@ -44,3 +44,6 @@ supabase/.temp/
 
 .vercel
 .env*
+
+# Estado/telemetria da Pipeline A+ (handoffs JSON + run_id)
+.pipeline/

@@ -47,3 +47,6 @@ supabase/.temp/
 
 # Estado/telemetria da Pipeline A+ (handoffs JSON + run_id)
 .pipeline/
+
+# Artefatos do Playwright MCP (screenshots/snapshots de verificação)
+.playwright-mcp/

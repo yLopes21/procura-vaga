@@ -1,0 +1,57 @@
+[
+  {
+    "id": "88499546-e9f7-4403-87a5-240050bd7c5b",
+    "text": "Accounts Payable Analyst",
+    "hostedUrl": "https://jobs.lever.co/spotify/88499546-e9f7-4403-87a5-240050bd7c5b",
+    "applyUrl": "https://jobs.lever.co/spotify/88499546-e9f7-4403-87a5-240050bd7c5b/apply",
+    "categories": {
+      "commitment": "Permanent",
+      "department": "Finance",
+      "location": "New York, NY",
+      "team": "Accounting",
+      "allLocations": [
+        "New York, NY"
+      ]
+    },
+    "createdAt": 1778529611285,
+    "country": "US",
+    "workplaceType": "hybrid"
+  },
+  {
+    "id": "cc5ccf57-b851-4c25-8840-ed4cd0535c12",
+    "text": "Analyst, Licensing Finance – FP&A",
+    "hostedUrl": "https://jobs.lever.co/spotify/cc5ccf57-b851-4c25-8840-ed4cd0535c12",
+    "applyUrl": "https://jobs.lever.co/spotify/cc5ccf57-b851-4c25-8840-ed4cd0535c12/apply",
+    "categories": {
+      "commitment": "Permanent",
+      "department": "Finance",
+      "location": "New York, NY",
+      "team": "Financial Planning and Analysis",
+      "allLocations": [
+        "New York, NY"
+      ]
+    },
+    "createdAt": 1772482884346,
+    "country": "US",
+    "workplaceType": "onsite"
+  },
+  {
+    "id": "08d82da1-0c72-44d1-91eb-7fa22dee3d39",
+    "text": "Analytics Engineer II",
+    "hostedUrl": "https://jobs.lever.co/spotify/08d82da1-0c72-44d1-91eb-7fa22dee3d39",
+    "applyUrl": "https://jobs.lever.co/spotify/08d82da1-0c72-44d1-91eb-7fa22dee3d39/apply",
+    "categories": {
+      "commitment": "Permanent",
+      "department": "Data and Analytics",
+      "location": "Stockholm",
+      "team": "Platform",
+      "allLocations": [
+        "Stockholm",
+        "London"
+      ]
+    },
+    "createdAt": 1778685832322,
+    "country": "SE",
+    "workplaceType": "hybrid"
+  }
+]

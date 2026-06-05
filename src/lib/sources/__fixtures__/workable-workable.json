@@ -1,0 +1,107 @@
+{
+  "total": 4,
+  "results": [
+    {
+      "id": 5805859,
+      "shortcode": "39441A01CA",
+      "title": "Enterprise Account Executive (New Business)",
+      "remote": false,
+      "location": {
+        "country": "United Kingdom",
+        "countryCode": "GB",
+        "city": "London",
+        "region": null
+      },
+      "locations": [
+        {
+          "country": "United Kingdom",
+          "countryCode": "GB",
+          "city": "London",
+          "region": null,
+          "hidden": false
+        }
+      ],
+      "state": "published",
+      "isInternal": false,
+      "code": null,
+      "published": "2026-05-12T00:00:00.000Z",
+      "type": "full",
+      "language": "en",
+      "department": [
+        "Revenue",
+        "Sales"
+      ],
+      "accountUid": "470ec0c3-a5b0-4980-a115-f64f81de9c3c",
+      "approvalStatus": "approved",
+      "workplace": "hybrid"
+    },
+    {
+      "id": 5654817,
+      "shortcode": "4452AE117C",
+      "title": "US Sales Manager, SMB",
+      "remote": false,
+      "location": {
+        "country": "United States",
+        "countryCode": "US",
+        "city": "Boston",
+        "region": "Massachusetts"
+      },
+      "locations": [
+        {
+          "country": "United States",
+          "countryCode": "US",
+          "city": "Boston",
+          "region": "Massachusetts",
+          "hidden": false
+        }
+      ],
+      "state": "published",
+      "isInternal": false,
+      "code": null,
+      "published": "2026-05-07T00:00:00.000Z",
+      "type": "full",
+      "language": "en",
+      "department": [
+        "Revenue",
+        "Sales"
+      ],
+      "accountUid": "470ec0c3-a5b0-4980-a115-f64f81de9c3c",
+      "approvalStatus": "approved",
+      "workplace": "hybrid"
+    },
+    {
+      "id": 4966279,
+      "shortcode": "E906F4B9B9",
+      "title": "Integrations Engineer",
+      "remote": false,
+      "location": {
+        "country": "Greece",
+        "countryCode": "GR",
+        "city": "Athens",
+        "region": "Attica"
+      },
+      "locations": [
+        {
+          "country": "Greece",
+          "countryCode": "GR",
+          "city": "Athens",
+          "region": "Attica",
+          "hidden": false
+        }
+      ],
+      "state": "published",
+      "isInternal": false,
+      "code": "",
+      "published": "2026-03-31T00:00:00.000Z",
+      "type": "full",
+      "language": "en",
+      "department": [
+        "Operations",
+        "Customer Services"
+      ],
+      "accountUid": "470ec0c3-a5b0-4980-a115-f64f81de9c3c",
+      "approvalStatus": "approved",
+      "workplace": "hybrid"
+    }
+  ]
+}

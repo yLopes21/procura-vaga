@@ -15,7 +15,7 @@ export default function LoginPage() {
             Procura-Vaga
           </h1>
           <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
-            Acesso privado. Entre com seu e-mail para receber o link.
+            Acesso privado. Entre com usuário e senha.
           </p>
         </header>
 
@@ -24,7 +24,7 @@ export default function LoginPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-zinc-400 dark:text-zinc-600">
-          Sem senha. Um link de uso único chega no seu e-mail.
+          Acesso restrito ao titular.
         </p>
       </div>
     </main>

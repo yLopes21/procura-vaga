@@ -1,37 +1,40 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
 
 export interface LoginState {
-  status: "idle" | "sent" | "error";
+  status: "idle" | "error";
   message?: string;
 }
 
+/** Mensagem única (anti-enumeração): não revela se foi usuário inexistente ou senha errada. */
+const GENERIC_ERROR = "Usuário ou senha inválidos.";
+
 /**
- * Dispara o magic-link. A mensagem de sucesso é DELIBERADAMENTE vaga ("se este
- * e-mail tiver acesso") — não revela se o endereço está na allowlist
- * (anti-enumeração). A allowlist real barra no envio e no clique.
+ * Login por usuário/e-mail + senha (Credentials). Sucesso → redirect "/".
+ * Falha → mensagem genérica única. Nunca loga identifier nem senha.
  */
-export async function sendMagicLink(_prev: LoginState, formData: FormData): Promise<LoginState> {
-  const email = String(formData.get("email") ?? "").trim();
-  if (!email) return { status: "error", message: "Informe um e-mail." };
+export async function signInWithPassword(_prev: LoginState, formData: FormData): Promise<LoginState> {
+  const identifier = String(formData.get("identifier") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  if (!identifier || !password) return { status: "error", message: "Preencha usuário e senha." };
 
   try {
-    await signIn("resend", { email, redirect: false });
-    return {
-      status: "sent",
-      message: "Se este e-mail tiver acesso, o link de entrada já está a caminho. Confira sua caixa de entrada.",
-    };
+    await signIn("credentials", { identifier, password, redirect: false });
   } catch (e) {
-    if (e instanceof AuthError) {
-      return { status: "error", message: "Não foi possível enviar agora. Tente novamente em instantes." };
-    }
-    // Re-lança o redirect interno do Next (NEXT_REDIRECT) para o framework tratar.
-    if (typeof (e as { digest?: unknown }).digest === "string" && (e as { digest: string }).digest.startsWith("NEXT_REDIRECT")) {
+    if (e instanceof AuthError) return { status: "error", message: GENERIC_ERROR };
+    // Re-lança o redirect interno do Next (NEXT_REDIRECT) — não é erro.
+    if (
+      typeof (e as { digest?: unknown }).digest === "string" &&
+      (e as { digest: string }).digest.startsWith("NEXT_REDIRECT")
+    ) {
       throw e;
     }
-    console.error("[auth:sendMagicLink] erro inesperado:", e);
-    return { status: "error", message: "Erro interno. Tente novamente em instantes." };
+    console.error("[auth:signInWithPassword] erro inesperado");
+    return { status: "error", message: GENERIC_ERROR };
   }
+  // Fora do try: redirect() lança NEXT_REDIRECT internamente; só roda se o login passou.
+  redirect("/");
 }

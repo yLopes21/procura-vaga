@@ -1,0 +1,44 @@
+name: Coleta e digest diários
+
+# Roda a coleta (enche o catálogo) e o digest (avisa o dono das vagas novas).
+# Ativa só depois que o repo estiver no GitHub (Onda 13) e os secrets configurados.
+on:
+  schedule:
+    - cron: "0 9 * * *" # 09:00 UTC = 06:00 BRT — vagas frescas de manhã
+  workflow_dispatch: {} # permite rodar manualmente pelo painel
+
+concurrency:
+  group: coleta-diaria
+  cancel-in-progress: false
+
+jobs:
+  coletar-e-avisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NODE_ENV: production
+      EMAIL_TRANSPORT: resend
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+      ALLOWED_EMAIL: ${{ secrets.ALLOWED_EMAIL }}
+      JOOBLE_API_KEY: ${{ secrets.JOOBLE_API_KEY }}
+      RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+      ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+      ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # alinhado com @types/node@^22 do projeto
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Coletar vagas (todas as fontes)
+        run: pnpm scrape:ci
+      - name: Enviar digest do dia
+        run: pnpm digest:ci

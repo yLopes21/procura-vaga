@@ -14,7 +14,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "scrape": "tsx --env-file=.env.local scripts/daily.ts"
+    "scrape": "tsx --env-file=.env.local scripts/daily.ts",
+    "scrape:ci": "tsx scripts/daily.ts",
+    "digest": "tsx --env-file=.env.local scripts/digest.ts",
+    "digest:ci": "tsx scripts/digest.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",

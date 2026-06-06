@@ -10,19 +10,30 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 /* ============================================================
  * Auth.js (next-auth) — schema padrão do Drizzle adapter
  * ============================================================ */
-export const users = pgTable("user", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  name: text("name"),
-  email: text("email").notNull(),
-  emailVerified: timestamp("email_verified", { mode: "date" }),
-  image: text("image"),
-});
+export const users = pgTable(
+  "user",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name"),
+    email: text("email").notNull(),
+    emailVerified: timestamp("email_verified", { mode: "date" }),
+    image: text("image"),
+    // Login por usuário/senha (migração do magic-link). Ambas NULLABLE de propósito:
+    // users criados pelo adapter Auth.js podem não ter; a regra "login por senha exige
+    // hash presente" vive em verifyPassword (fail-closed), não numa constraint NOT NULL.
+    username: text("username"),
+    passwordHash: text("password_hash"),
+  },
+  // UNIQUE case-insensitive; o Postgres permite múltiplos NULL, então users sem username não colidem.
+  (t) => [uniqueIndex("user_username_lower_idx").on(sql`lower(${t.username})`)],
+);
 
 export const accounts = pgTable(
   "account",

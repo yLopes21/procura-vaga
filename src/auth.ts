@@ -1,21 +1,23 @@
 import NextAuth from "next-auth";
-import Resend from "next-auth/providers/resend";
+import Credentials from "next-auth/providers/credentials";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { z } from "zod";
+import { sql } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
-import { isEmailAllowed } from "@/lib/auth/allowlist";
 import { authConfig } from "./auth.config";
-import { env, requireEnv } from "@/lib/env";
+import { verifyPassword } from "@/lib/auth/password";
+import { checkRateLimit } from "@/lib/auth/rateLimit";
 
-/** HTML mínimo do e-mail de acesso (sem imagens externas, ATS/spam-safe). */
-function magicLinkEmail(url: string): string {
-  return `<!doctype html><html lang="pt-BR"><body style="font-family:system-ui,-apple-system,sans-serif;background:#fafafa;padding:24px;color:#18181b">
-  <div style="max-width:480px;margin:0 auto;background:#fff;border:1px solid #e4e4e7;border-radius:12px;padding:32px">
-    <h1 style="font-size:18px;margin:0 0 8px">Entrar no Procura-Vaga</h1>
-    <p style="font-size:14px;color:#52525b;margin:0 0 24px">Clique no botão para acessar. O link expira em breve e só funciona uma vez.</p>
-    <a href="${url}" style="display:inline-block;background:#18181b;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:600">Entrar</a>
-    <p style="font-size:12px;color:#a1a1aa;margin:24px 0 0">Se você não pediu este acesso, ignore este e-mail.</p>
-  </div></body></html>`;
-}
+/**
+ * Auth.js (Node runtime) — login por usuário/e-mail + senha (Credentials).
+ * Substitui o magic-link. NÃO há signup: usuários só nascem via `pnpm seed:user`
+ * (uso pessoal). Sessão em JWT (ver auth.config). `verifyPassword` usa node:crypto,
+ * por isso o route /api/auth roda em runtime nodejs.
+ */
+const credentialsSchema = z.object({
+  identifier: z.string().trim().min(1).max(320),
+  password: z.string().min(1).max(200),
+});
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -26,42 +28,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     verificationTokensTable: schema.verificationTokens,
   }),
   providers: [
-    Resend({
-      apiKey: env.EMAIL_TRANSPORT === "resend" ? requireEnv("RESEND_API_KEY") : (env.RESEND_API_KEY ?? "re_missing"),
-      from: env.EMAIL_FROM,
+    Credentials({
+      credentials: { identifier: {}, password: {} },
       /**
-       * Allowlist também no ENVIO (defesa em profundidade): e-mail fora da
-       * allowlist não dispara nada — protege a cota grátis do Resend e não
-       * revela se o endereço "existe". O callback signIn barra de novo no clique.
+       * Valida usuário/e-mail + senha. Retorna o user (sem o hash) ou null —
+       * NUNCA lança. Resposta única para "não existe" e "senha errada"
+       * (anti-enumeração). Rate-limit best-effort antes de comparar o hash.
        */
-      async sendVerificationRequest({ identifier, url, provider }) {
-        if (!isEmailAllowed(identifier, env.ALLOWED_EMAIL)) {
-          console.warn("[auth] tentativa de acesso por e-mail não autorizado");
-          return;
-        }
-        if (env.EMAIL_TRANSPORT === "console") {
-          if (env.NODE_ENV === "production") {
-            throw new Error("EMAIL_TRANSPORT=console proibido em produção (fail-closed).");
-          }
-          console.log(`\n🔑 Magic link para ${identifier}:\n${url}\n`);
-          return;
-        }
-        const res = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${provider.apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: provider.from,
-            to: identifier,
-            subject: "Seu acesso ao Procura-Vaga",
-            html: magicLinkEmail(url),
-          }),
-        });
-        if (!res.ok) {
-          console.error("[auth:resend] envio falhou", res.status, await res.text());
-          throw new Error(`Resend falhou (${res.status}).`);
+      async authorize(raw, req) {
+        const parsed = credentialsSchema.safeParse(raw);
+        if (!parsed.success) return null;
+        const { identifier, password } = parsed.data;
+        const ident = identifier.toLowerCase();
+
+        const ip = req?.headers?.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+        if (!checkRateLimit(`${ip}:${ident}`).allowed) return null;
+
+        try {
+          const db = getDb();
+          const [user] = await db
+            .select()
+            .from(schema.users)
+            .where(sql`lower(${schema.users.email}) = ${ident} OR lower(${schema.users.username}) = ${ident}`)
+            .limit(1);
+          if (!user || !user.passwordHash) return null;
+          if (!(await verifyPassword(password, user.passwordHash))) return null;
+          return { id: user.id, name: user.name, email: user.email, image: user.image };
+        } catch {
+          // Erro inesperado (ex.: banco indisponível) — fail-closed, sem logar credenciais.
+          console.error("[auth:credentials] erro inesperado no authorize");
+          return null;
         }
       },
     }),

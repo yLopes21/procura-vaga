@@ -85,6 +85,20 @@ Preencher no `.env.local` (já tem Neon + AUTH_SECRET). Sem elas, o código exis
 
 > Já em `.env.local`: `DATABASE_URL` (Neon), `AUTH_SECRET`, `ALLOWED_EMAIL`, `EMAIL_FROM`, `LLM_PROVIDER=gemini`, `NEXT_PUBLIC_APP_URL`.
 
+## Onda 7 — PRONTA para executar (descoberta feita 2026-06-05)
+
+Trilha PADRÃO · **key-independent** (scraping HTML, não usa chave). Viabilidade testada AO VIVO (curl com User-Agent de browser):
+- **Vagas.com** → HTTP 200, ~158 KB, 542 menções de vaga, **sem Cloudflare/captcha → RASPÁVEL**. Busca: `https://www.vagas.com.br/vagas-de-<termo>` (ex.: `vagas-de-estagio+administracao`).
+- **InfoJobs** → HTTP 200, ~240 KB, **sem bloqueio → RASPÁVEL**. Busca: `https://www.infojobs.com.br/empregos.aspx?palabra=<termo>`.
+- **Catho** → `/vagas/estagio-administracao/` deu 404 (NÃO bloqueia); achar o padrão de busca correto e validar ao vivo antes de implementar — se difícil, vira TECH_DEBT (não bloqueia a onda).
+
+Passos exatos:
+1. `src/lib/scrape/vagas.ts` e `src/lib/scrape/infojobs.ts` — cada um implementa `JobSource` (`source`, `fetchJobs(query) → RawJobFromATS[]`) com parse via **cheerio** (já instalado): seletor do card → `title`/`company`/`applyUrl`/`locationRaw`; `employmentTypeHint` quando o site expõe. **TDD por fixture HTML** (salvar HTML real em `__fixtures__/`, testar o parser sem rede).
+2. `data/companies-watchlist.json` — adicionar bloco de queries de scraping (termos por curso, ex.: "estagio administracao", "estagio marketing"…).
+3. `scripts/daily.ts` `collectAll` — chamar os scrapers junto dos connectors; o **kill-switch por fonte** (try/catch existente) garante que uma fonte que bloqueie não derrube as outras.
+4. Verificação ao-vivo: `pnpm scrape` → vagas reais de Vagas/InfoJobs no Neon; conferir contagem por fonte.
+Regras: usar a taxonomia para os termos; nunca raspar logado; respeitar delays/jitter.
+
 ## Decisões travadas (log — não reabrir sem motivo)
 
 - **Uso PESSOAL** (não comercial) → LGPD não se aplica (Art. 4º I); raspar no volume pessoal; SEM PJ, SEM páginas legais, SEM proteção de PII de terceiros.
@@ -99,4 +113,8 @@ Preencher no `.env.local` (já tem Neon + AUTH_SECRET). Sem elas, o código exis
 
 ## Como retomar (comando)
 
-Na raiz do projeto: **`/pipeline`** apontando para este `PROGRESSO.md`. Começa fechando a **Onda 3** (ao-vivo `pnpm scrape` + commit), depois segue **Onda 4 (Auth.js)** na ordem do mapa.
+Estado: **HEAD `ec5d315` (Onda 6 ✅)**. Ondas 0–6 commitadas e verificadas ao vivo · suíte 161/161 · branch `feat/mvp-foundation` · working tree limpo. Próximo: **Onda 7** (seção acima). Engine A+ literal: rodar `pipe_emit.py` (helper em `C:\tmp` ou recriar) com CWD em `~/.claude/pipeline/engine`, `PIPELINE_PROJECT_PATH` = `<projeto>/.pipeline`, modo copilable.
+
+**Mensagem exata para colar na nova sessão (no terminal do projeto):**
+
+> /loop Continue o projeto Procura-Vaga com a Pipeline A+ no modo ENGINE A+ LITERAL (handoff + telemetria via ~/.claude/pipeline, como combinamos). SEMPRE comece lendo PROGRESSO.md e ~/.claude/memory/errors/ antes de tocar código; retome da próxima onda pendente (hoje a Onda 7) e execute na ordem do mapa até a Onda 13, SEM parar entre fases. Por onda: TDD (teste falhando antes), gate test+tsc+lint+build, code-review no diff antes do commit, verificação ao vivo onde há superfície, emitir handoff no engine a cada transição, commit atômico em PT-BR e ATUALIZAR o PROGRESSO.md ao fechar a onda. Pare SÓ nos 3 gates reais: (1) chaves JSearch (Subscribe) + Adzuna (cadastro) na Onda 8; (2) meu CV/perfil na Onda 9; (3) meu GO de deploy na Onda 13. Não peça aprovação entre ondas.

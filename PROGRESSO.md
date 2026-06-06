@@ -7,11 +7,10 @@
 ## Onde estamos AGORA
 
 - **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 13).
-- **HEAD:** **ONDA 13 — DEPLOY NO AR** 🚀 **https://procura-vaga.vercel.app** (login 200, manifest+ícones 200, rotas protegidas 307, callback aponta p/ prod não localhost — verificado ao vivo). Repo privado `github.com/yLopes21/procura-vaga` (main). Feitas: **7, 8 (código), 10, 11, 12, 13 (deploy)**. Esteira A+ rodou auditoria 7–12 + pre-mortem de deploy. Engine run `a220b9f5`.
+- **HEAD:** **ONDA 13 COMPLETA — no ar + cron automático** 🚀 **https://procura-vaga.vercel.app** (repo público `github.com/yLopes21/procura-vaga`, main). **Vercel Cron** (`vercel.json` → `/api/cron/daily`, 09:00 UTC) verificado ao vivo: coleta+digest em **41s**, 893 vagas, **digest enviado (50 vagas, Resend em prod)**, endpoint 401 sem Bearer. GitHub Actions desativado (billing). Feitas **7–13**. Engine run `a220b9f5`.
 - **⚠️ EXECUÇÃO:** Pipeline A+ SEMPRE via **tool Workflow** (esteira), nunca manual. Ver `errors/pipeline-a+-exige-workflow-esteira-nunca-execucao-manual.md`.
-- **ÚNICO pendente do deploy:** **cron automático bloqueado por BILLING do GitHub Actions** (repo privado consome minutos faturados; job "not started"). Opções: (a) repo público, (b) resolver billing, (c) **Vercel Cron** (recomendado — já paga Vercel; implemento via esteira). Workflow + secrets já prontos.
-- **Gates ainda abertos:** **#1** chaves JSearch/Adzuna (Onda 8 ao vivo) · **#2** perfil/CV (Onda 9). Smoke-test do login (magic-link) = você acessa `/login` e pede o link.
-- **Suíte:** 238/238 · Neon 712 vagas · prod no ar.
+- **Gates abertos (INCREMENTOS, não bloqueiam o produto):** **#1** chaves JSearch (Subscribe rapidapi) + Adzuna (cadastro) = mais fontes · **#2** perfil/CV → Onda 9 (feature de currículo adaptado). Smoke-test do login = você acessa `/login` e pede o link.
+- **Suíte:** 246/246 · tsc/lint/build limpos · Neon 893 vagas · cron diário ativo (41s, cabe em qualquer plano Vercel).
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
 
 ## Como a Pipeline A+ executa cada onda
@@ -46,7 +45,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | 10 | `notify/digest` + `.github/workflows/cron-diario.yml` | PADRÃO | 1 | `ca663b5` | ✅ **ao vivo (console): 50 vagas → e-mail 21KB** |
 | 11 | `api/recruiter/draft` (link recrutadores + rascunho) | LITE | 1 | `f25dd0a` | ✅ |
 | 12 | PWA (`app/manifest.ts` + ícones + service worker) + fix matcher | LITE-PADRÃO + a11y | 1 | `e6f5278` | ✅ **ao vivo: manifest+ícones 200, console limpo** |
-| 13 | Repo GitHub + deploy Vercel + envs/secrets + verificação READY/GET | CRÍTICA | 1 | `721632e` | 🟡 **deploy ✅ ao vivo; cron = billing GitHub (decisão)** |
+| 13 | Repo GitHub + deploy Vercel + **Vercel Cron** (`/api/cron/daily`) + verificação | CRÍTICA | 1 | `9122958` | ✅ **no ar + cron ao vivo (41s, digest enviado)** |
 
 **Ordem de retomada:** **4 (auth)** → **5 (UI)** → **6 (busca + validação no clique)** → **7 (scrapers BR, key-indep)** → **8 (agregadores)** → **9 (CV)** → **10 (digest)** → **11 (recruiter)** → **12 (PWA)** → **13 (deploy — GATE humano)**.
 
@@ -84,6 +83,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | `a821833` | refactor(sources): aplica auditoria da esteira A+ (collect testado + timeout API) |
 | `465739d` | chore(deploy): pre-mortem da esteira — fix pnpm no cron + engines node 22 |
 | `721632e` | chore(deploy): ignora .vercel · Onda 13 deploy Vercel (procura-vaga.vercel.app) |
+| `9122958` | feat(cron): Vercel Cron p/ coleta+digest diária (substitui GitHub Actions, TDD) |
 
 ## PENDENTE — chaves do Rodrigo (B) [bloqueia ao-vivo das ondas 7, 8, 9]
 
@@ -135,7 +135,7 @@ Feito isso, `pnpm scrape` coleta JSearch + Adzuna ao vivo (ajusto o schema se a 
 
 ## Como retomar (comando)
 
-Estado: **HEAD `721632e` — DEPLOY NO AR** 🚀 https://procura-vaga.vercel.app · repo privado `github.com/yLopes21/procura-vaga` (main) · suíte 238/238 · Neon 712 vagas. Feitas 7,8(código),10,11,12,13(deploy). **Pendentes:** cron (billing GitHub Actions → decisão; **Vercel Cron** recomendado, implemento via esteira) · gate #1 chaves JSearch/Adzuna · gate #2 perfil/CV (Onda 9). **Pipeline A+ SEMPRE via tool Workflow** (ver errors/pipeline-a+...). Engine run `a220b9f5`; `pipe_emit.py` (C:\tmp) com python `~/.claude/pipeline/.venv/Scripts/python.exe`.
+Estado: **HEAD `9122958` — DEPLOY + CRON NO AR** 🚀 https://procura-vaga.vercel.app · repo público `github.com/yLopes21/procura-vaga` (main) · suíte 246/246 · Neon 893 vagas · **Vercel Cron diário ativo** (41s ao vivo, digest enviado). Feitas **7–13**. **Pendentes = só incrementos:** gate #1 chaves JSearch (Subscribe)/Adzuna (cadastro) p/ mais fontes · gate #2 perfil/CV → Onda 9 (currículo adaptado). **Pipeline A+ SEMPRE via tool Workflow** (ver errors/pipeline-a+...). Engine run `a220b9f5`; `pipe_emit.py` (C:\tmp) com python `~/.claude/pipeline/.venv/Scripts/python.exe`.
 
 **Mensagem exata para colar na nova sessão (no terminal do projeto):**
 

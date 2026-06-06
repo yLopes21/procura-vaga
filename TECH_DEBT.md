@@ -33,6 +33,8 @@ Adicione items com: data, descrição, severidade, e esforço estimado.
 | 14 | 2026-06-06 | Onda 8: `jsearch.ts` e `adzuna.ts` foram escritos com fixture da DOC (sem validação ao vivo: JSearch 403 sem subscribe, Adzuna sem chave). Validar shape real assim que as chaves chegarem (gate #1) e ajustar o schema se divergir. | 🟡 | ~1h | Pendente |
 | 15 | 2026-06-06 | Onda 10: `sendDigest.ts` (selectNewJobs + runDigest) sem teste unitário (entrypoint I/O, como `daily.ts`; verificado ao vivo em console). Cobrir com mock de banco: 0 vagas→não envia; console→não marca seen; resend→marca; idempotência. | 🟡 | ~1.5h | Pendente |
 | 16 | 2026-06-06 | Onda 10: workflow `cron-diario.yml` não alerta se `scrape:ci` coletar 0 vagas (exit 0 com todas as fontes falhando → run "verde"). Adicionar step de sanidade (count(jobs active) > 0) antes do digest. | 🟢 | ~30min | Pendente |
+| 17 | 2026-06-06 | Onda 13 (cron review P2-4): `CRON_SECRET` é `optional()` em todo ambiente; `AUTH_SECRET` é obrigatório em prod. Tornar `CRON_SECRET` obrigatório em produção (descoberta cedo) — mas antes garantir a env em TODOS os ambientes Vercel (Preview inclusive), senão quebra o build de preview. | 🟢 | ~20min | Pendente |
+| 18 | 2026-06-06 | Onda 13: cron Vercel roda coleta+digest no Neon compartilhado dev↔prod. NÃO rodar `pnpm scrape`/`digest` local apontando p/ o mesmo banco (marca seen / fecha vagas de prod). Separar banco dev quando deixar de ser projeto de 1 usuário. | 🟢 | — | Pendente |
 
 ## Items Resolvidos
 

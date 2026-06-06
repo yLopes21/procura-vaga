@@ -31,6 +31,8 @@ Adicione items com: data, descrição, severidade, e esforço estimado.
 | 12 | 2026-06-06 | Onda 8: cobertura BR do **Jooble** é fraca p/ "estágio" (`location:""` traz vagas globais; `location:"Brazil"` → 0). 149 vagas ao vivo, mas com ruído geográfico. Afinar `location`/filtro BR no `fetchJoobleJobs` ou aceitar como fonte secundária. | 🟢 | ~1h | Pendente |
 | 13 | 2026-06-06 | Onda 8: Adzuna expõe `contract_time` (part_time/full_time) — hoje ignorado (`employmentTypeHint: null`), pois não mapeia o vínculo BR (estagio/trainee/efetivo). Pode virar metadado de regime futuramente. | 🟢 | ~30min | Pendente |
 | 14 | 2026-06-06 | Onda 8: `jsearch.ts` e `adzuna.ts` foram escritos com fixture da DOC (sem validação ao vivo: JSearch 403 sem subscribe, Adzuna sem chave). Validar shape real assim que as chaves chegarem (gate #1) e ajustar o schema se divergir. | 🟡 | ~1h | Pendente |
+| 15 | 2026-06-06 | Onda 10: `sendDigest.ts` (selectNewJobs + runDigest) sem teste unitário (entrypoint I/O, como `daily.ts`; verificado ao vivo em console). Cobrir com mock de banco: 0 vagas→não envia; console→não marca seen; resend→marca; idempotência. | 🟡 | ~1.5h | Pendente |
+| 16 | 2026-06-06 | Onda 10: workflow `cron-diario.yml` não alerta se `scrape:ci` coletar 0 vagas (exit 0 com todas as fontes falhando → run "verde"). Adicionar step de sanidade (count(jobs active) > 0) antes do digest. | 🟢 | ~30min | Pendente |
 
 ## Items Resolvidos
 

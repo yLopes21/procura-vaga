@@ -7,9 +7,9 @@
 ## Onde estamos AGORA
 
 - **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 13).
-- **HEAD:** Onda 8 (agregadores) **código commitado (`5f8f773`)** — Jooble **149** vagas reais ao vivo. Neon com **712 únicas** (gupy 203 + vagas 164 + infojobs 120 + jooble 149 + greenhouse 100). **GATE #1 atingido.** Engine A+ literal LIGADO (run `a220b9f5`).
-- **Ponto de retomada:** **GATE HUMANO #1** — JSearch (Subscribe no rapidapi.com; `RAPIDAPI_KEY` já existe, só assinar a API) + Adzuna (cadastro grátis em developer.adzuna.com → `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` no `.env.local`). Código pronto e testado; só falta a verificação ao vivo. Depois: **Onda 9 (CV `cv/tailor`)** — gate #2 (perfil do Rodrigo; `GEMINI_API_KEY` já existe).
-- **Suíte:** 216/216 verde · tsc/lint/build limpos.
+- **HEAD:** Onda 10 (digest diário) commitada (`ca663b5`) e verificada ao vivo (console: 50 vagas → e-mail 21KB). Feitas: **7, 8 (código), 10**. Rodrigo autorizou **adiantar 10–12** enquanto providencia os gates. Engine A+ literal LIGADO (run `a220b9f5`).
+- **Ponto de retomada:** **Onda 11 (`api/recruiter/draft`, LITE)** → depois **Onda 12 (PWA)**. Pendentes de gate: **#1** chaves JSearch (Subscribe rapidapi) + Adzuna (cadastro developer.adzuna.com) p/ fechar a Onda 8 ao vivo; **#2** perfil/CV do Rodrigo p/ a Onda 9; **#3** GO de deploy (Onda 13).
+- **Suíte:** 223/223 verde · tsc/lint/build limpos · Neon com 712 vagas.
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
 
 ## Como a Pipeline A+ executa cada onda
@@ -41,7 +41,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | 7 | **Scrapers BR seletivos** `sources/{vagas,infojobs}.ts` + `http.ts` (HTML público, retry, kill-switch) | PADRÃO | 2 (Catho→débito) | `9ac0c81` | ✅ **ao vivo: Vagas 164 + InfoJobs 120** |
 | 8 | `sources/{jooble,jsearch,adzuna}` + `fetchJsonWithRetry` (Google for Jobs cobre LinkedIn/Indeed) | PADRÃO | 3 | `5f8f773` | 🟡 **código ✅; Jooble 149 ao vivo; JSearch/Adzuna = GATE #1** |
 | 9 | `cv/tailor` (adapter LLM gemini\|anthropic\|groq) + `api/cv/tailor` | CRÍTICA (anti-invenção) | 1 | — | ☐ KEY-DEP (`GEMINI` ✅; aguarda perfil do Rodrigo) |
-| 10 | `notify/digest` + `.github/workflows/cron-diario.yml` | PADRÃO | 1 | — | ☐ KEY-DEP (`RESEND` ✅) |
+| 10 | `notify/digest` + `.github/workflows/cron-diario.yml` | PADRÃO | 1 | `ca663b5` | ✅ **ao vivo (console): 50 vagas → e-mail 21KB** |
 | 11 | `api/recruiter/draft` (link genérico + rascunho) | LITE | 1 | — | ☐ key-indep |
 | 12 | PWA (`public/manifest.json` + service worker) | LITE-PADRÃO + a11y | 1 | — | ☐ key-indep |
 | 13 | Repo GitHub + push + Actions secrets + deploy Vercel + env prod + verificação READY + GET | CRÍTICA (produção, GATE humano) | 1 | — | ☐ |
@@ -76,6 +76,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | `ec5d315` | feat(freshness): Onda 6 — validação no clique (anti-SSRF + persist, TDD) |
 | `9ac0c81` | feat(scrape): Onda 7 — scrapers BR Vagas.com + InfoJobs (cheerio + retry, TDD) |
 | `5f8f773` | feat(sources): Onda 8 — agregadores Jooble + JSearch + Adzuna (TDD) |
+| `ca663b5` | feat(notify): Onda 10 — digest diário por e-mail + workflow cron (TDD) |
 
 ## PENDENTE — chaves do Rodrigo (B) [bloqueia ao-vivo das ondas 7, 8, 9]
 
@@ -127,7 +128,7 @@ Feito isso, `pnpm scrape` coleta JSearch + Adzuna ao vivo (ajusto o schema se a 
 
 ## Como retomar (comando)
 
-Estado: **HEAD `5f8f773` (Onda 8 código ✅)**. Ondas 0–7 ✅ + Onda 8 (código; Jooble ao vivo) · suíte 216/216 · branch `feat/mvp-foundation`. **PARADO no GATE #1** (chaves JSearch/Adzuna — ver seção "Onda 8"). Após o gate: `pnpm scrape` p/ verificar JSearch/Adzuna ao vivo → **Onda 9 (CV, gate #2)** → 10 (digest, RESEND ✅) → 11 (recruiter) → 12 (PWA) → 13 (deploy, gate #3). Engine A+ literal: `pipe_emit.py` (em `C:\tmp`) com o python `~/.claude/pipeline/.venv/Scripts/python.exe`; run `a220b9f5`; modo copilable.
+Estado: **HEAD `ca663b5` (Onda 10 ✅)**. Feitas: 0–8 (8 = código; Jooble ao vivo) + 10 · suíte 223/223 · branch `feat/mvp-foundation`. Em andamento autônomo: **11 (recruiter) → 12 (PWA)**. Aguardam input do Rodrigo: 8-verify + 9 (gates #1/#2) e 13 (GO, gate #3). Engine A+ literal: `pipe_emit.py` (em `C:\tmp`) com o python `~/.claude/pipeline/.venv/Scripts/python.exe`; run `a220b9f5`; modo copilable.
 
 **Mensagem exata para colar na nova sessão (no terminal do projeto):**
 

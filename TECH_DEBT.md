@@ -24,6 +24,8 @@ Adicione items com: data, descrição, severidade, e esforço estimado.
 | 5 | 2026-06-05 | Onda 4 (verif. visual): `/login` gera 5 console 404 (`manifest.json` + `favicon.ico`). Assets ausentes, não-funcionais. Resolver na Onda 12 (PWA cria o manifest) + adicionar `app/icon`. | 🟢 | ~20min | Pendente |
 | 6 | 2026-06-05 | Onda 5 (P2 review): busca sem índice composto `(status, employment_type)`; `ilike` sem `pg_trgm` GIN. OK p/ catálogo pequeno; revisar se passar de ~50k linhas. | 🟢 | ~1h | Pendente |
 | 7 | 2026-06-05 | Onda 5: só `administracao` tem `subareas` no `taxonomy-top20.json`. Popular subáreas dos outros 11 cursos (área dependente fica vazia neles hoje). | 🟡 | ~2h | Pendente |
+| 8 | 2026-06-05 | Onda 6: `/api/jobs/[id]/validate` sem sessão retorna 307 (redirect do middleware), não 401. Inócuo (1 usuário, card é fail-open); ideal seria o middleware responder 401 para rotas `/api`. | 🟢 | ~30min | Pendente |
+| 9 | 2026-06-05 | Dados (Onda 2a `location`): algumas cidades caem na UF errada (ex.: "Patos"/"João Pessoa" → BA em vez de PB). Revisar dicionário cidade→UF. | 🟡 | ~2h | Pendente |
 
 ## Items Resolvidos
 

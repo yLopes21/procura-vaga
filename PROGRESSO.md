@@ -7,9 +7,9 @@
 ## Onde estamos AGORA
 
 - **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 12).
-- **HEAD:** Onda 5 (UI busca Curso→Área) **commitada e verificada ao vivo**. Engine A+ literal LIGADO (handoffs em `.pipeline/`, run `a220b9f5`).
-- **Ponto de retomada:** **Onda 6 (validação no clique)** — `api/jobs/[id]/validate` (`classifyJobStatus`). Trilha CRÍTICA (core "nunca vaga morta").
-- **Suíte:** 153/153 verde · tsc/lint/build limpos.
+- **HEAD:** Onda 6 (validação no clique) **commitada e verificada ao vivo** (vaga real → "open" via fetch + anti-SSRF). Engine A+ literal LIGADO (run `a220b9f5`).
+- **Ponto de retomada:** **Onda 7 (scrapers BR seletivos)** — `scrape/{vagas,infojobs,catho}.ts`, key-independent (scraping não usa chave).
+- **Suíte:** 161/161 verde · tsc/lint/build limpos.
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
 
 ## Como a Pipeline A+ executa cada onda
@@ -37,7 +37,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | 3 | `daily.ts` + `toNewJob` + `listingDiff` + watchlist (ingestão idempotente + circuit-breaker + guarda coleta-vazia) | PADRÃO | `toNewJob` ∥ `listingDiff` | ✅ | ✅ **ao vivo: 487 vagas reais** |
 | 4 | Auth.js magic-link + middleware + allowlist (dupla, fail-closed) | CRÍTICA | 1 | ✅ | ✅ **login ao vivo: permitido entra, intruso negado (AccessDenied)** |
 | 5 | UI busca: **Curso (select taxonomia) → Área (chips dependentes)** + Estado + Tipo + cards/badge/estados | PADRÃO + design + a11y | 1 | ✅ | ✅ **ao vivo: curso→área dinâmico + filtro real** |
-| 6 | `api/jobs/search` + `api/jobs/[id]/validate` (validação no clique) | CRÍTICA (`validate` = core "nunca vaga morta") | search ∥ validate | — | ☐ key-indep |
+| 6 | `api/jobs/[id]/validate` (validação no clique: anti-SSRF redirect-manual + `classifyJobStatus` + persist) — busca ficou server-side na Onda 5 | CRÍTICA | 1 | ✅ | ✅ **ao vivo: vaga real → "open"; rota protegida** |
 | 7 | **Scrapers BR seletivos** `scrape/{vagas,infojobs,catho}.ts` (HTML público, kill-switch por fonte) | PADRÃO | 3 paralelas | — | ☐ **key-indep** (scraping não usa chave) |
 | 8 | `sources/{adzuna,jooble,jsearch}` agregadores (Google for Jobs cobre LinkedIn/Indeed) | PADRÃO | 3 paralelas | — | ☐ KEY-DEP (Jooble ✅; JSearch 403/Adzuna pend.) |
 | 9 | `cv/tailor` (adapter LLM gemini\|anthropic\|groq) + `api/cv/tailor` | CRÍTICA (anti-invenção) | 1 | — | ☐ KEY-DEP (`GEMINI` ✅; aguarda perfil do Rodrigo) |

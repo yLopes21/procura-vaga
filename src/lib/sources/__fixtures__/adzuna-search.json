@@ -1,0 +1,22 @@
+{
+  "count": 50,
+  "results": [
+    {
+      "id": "4856789012",
+      "title": "Estágio em Administração",
+      "company": { "display_name": "Empresa Modelo Ltda" },
+      "location": { "display_name": "São Paulo, São Paulo", "area": ["Brazil", "São Paulo", "São Paulo"] },
+      "redirect_url": "https://www.adzuna.com.br/details/4856789012",
+      "created": "2026-06-01T10:00:00Z",
+      "contract_time": "part_time"
+    },
+    {
+      "id": "4856790000",
+      "title": "Assistente Administrativo",
+      "company": { "display_name": "" },
+      "location": { "display_name": "Rio de Janeiro, Rio de Janeiro", "area": ["Brazil", "Rio de Janeiro"] },
+      "redirect_url": "https://www.adzuna.com.br/details/4856790000",
+      "created": "2026-05-29T09:30:00Z"
+    }
+  ]
+}

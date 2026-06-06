@@ -1,0 +1,28 @@
+{
+  "status": "OK",
+  "request_id": "fixture-doc-based",
+  "data": [
+    {
+      "job_id": "abc123BR",
+      "job_title": "Estagiário Administrativo",
+      "employer_name": "Empresa Exemplo Ltda",
+      "job_apply_link": "https://www.linkedin.com/jobs/view/abc123",
+      "job_employment_type": "INTERN",
+      "job_city": "São Paulo",
+      "job_state": "São Paulo",
+      "job_country": "BR",
+      "job_posted_at_datetime_utc": "2026-06-01T10:00:00.000Z"
+    },
+    {
+      "job_id": "def456BR",
+      "job_title": "Analista Administrativo Júnior",
+      "employer_name": "Outra Empresa SA",
+      "job_apply_link": "https://www.indeed.com/viewjob?jk=def456",
+      "job_employment_type": "FULLTIME",
+      "job_city": "Rio de Janeiro",
+      "job_state": "Rio de Janeiro",
+      "job_country": "BR",
+      "job_posted_at_datetime_utc": "2026-05-30T08:00:00.000Z"
+    }
+  ]
+}

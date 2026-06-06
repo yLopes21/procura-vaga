@@ -29,11 +29,28 @@ async function main(): Promise<void> {
   const passwordHash = await hashPassword(password); // nunca logar isto
   const db = getDb();
 
-  const [existing] = await db
+  // Identifica o user-alvo nos dois eixos de unicidade do banco (e-mail e username),
+  // de forma determinística — um lookup só por e-mail cairia no INSERT e colidiria
+  // com user_username_lower_idx num re-seed com username repetido.
+  const [byEmail] = await db
     .select({ id: users.id })
     .from(users)
     .where(sql`lower(${users.email}) = ${email}`)
     .limit(1);
+  const [byUsername] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(sql`lower(${users.username}) = ${username.toLowerCase()}`)
+    .limit(1);
+
+  // Se o username já existe numa linha que NÃO é a do e-mail passado, abortar:
+  // atualizar sobrescreveria o usuário errado; inserir violaria o UNIQUE de username.
+  if (byUsername && byEmail?.id !== byUsername.id) {
+    throw new Error(
+      `[create-user] o username "${username}" já pertence a outro usuário (e-mail diferente). Abortado para não sobrescrever o usuário errado.`,
+    );
+  }
+  const existing = byEmail ?? byUsername;
 
   if (existing) {
     await db

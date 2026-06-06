@@ -20,7 +20,7 @@ function SubmitButton() {
 }
 
 const inputClass =
-  "h-11 rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus-visible:border-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-900/10 aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus-visible:ring-red-500/20 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:border-zinc-100";
+  "h-11 rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-500 dark:placeholder:text-zinc-400 focus-visible:border-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-900/10 aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus-visible:ring-red-500/20 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:border-zinc-100";
 
 export function LoginForm() {
   const [state, formAction] = useActionState(signInWithPassword, initialState);

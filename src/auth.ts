@@ -5,7 +5,7 @@ import { z } from "zod";
 import { sql } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import { authConfig } from "./auth.config";
-import { verifyPassword } from "@/lib/auth/password";
+import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { checkRateLimit } from "@/lib/auth/rateLimit";
 
 /**
@@ -18,6 +18,22 @@ const credentialsSchema = z.object({
   identifier: z.string().trim().min(1).max(320),
   password: z.string().min(1).max(200),
 });
+
+/**
+ * Hash dummy de custo equivalente ao real, computado uma única vez (lazy).
+ * Quando o identifier não existe, comparamos a senha contra ELE para pagar o
+ * mesmo scrypt — fecha o canal lateral de timing (anti-enumeração temporal).
+ * Nunca concede acesso: só retornamos sucesso com user real + senha correta.
+ */
+// Singleton memoizado: resolve uma vez e nunca é regravado (Node é single-thread,
+// sem race real); `let` apenas para o lazy-init na primeira chamada.
+let dummyHashPromise: Promise<string> | null = null;
+function getDummyHash(): Promise<string> {
+  if (!dummyHashPromise) {
+    dummyHashPromise = hashPassword("timing-equalizer-not-a-real-credential");
+  }
+  return dummyHashPromise;
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -47,12 +63,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           const db = getDb();
           const [user] = await db
-            .select()
+            .select({
+              id: schema.users.id,
+              name: schema.users.name,
+              email: schema.users.email,
+              image: schema.users.image,
+              passwordHash: schema.users.passwordHash,
+            })
             .from(schema.users)
             .where(sql`lower(${schema.users.email}) = ${ident} OR lower(${schema.users.username}) = ${ident}`)
             .limit(1);
-          if (!user || !user.passwordHash) return null;
-          if (!(await verifyPassword(password, user.passwordHash))) return null;
+          // Paga scrypt SEMPRE (hash real ou dummy de mesmo custo) para que
+          // "usuário inexistente" e "senha errada" levem o mesmo tempo. (Falha de
+          // banco cai no catch abaixo e não distingue usuários — não enumera.)
+          const hashToCheck = user?.passwordHash ?? (await getDummyHash());
+          const passwordOk = await verifyPassword(password, hashToCheck);
+          if (!user || !user.passwordHash || !passwordOk) return null;
           return { id: user.id, name: user.name, email: user.email, image: user.image };
         } catch {
           // Erro inesperado (ex.: banco indisponível) — fail-closed, sem logar credenciais.

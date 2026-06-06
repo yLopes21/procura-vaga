@@ -5,7 +5,7 @@
  * Marca as enviadas em seen_jobs para não repetir. Idempotente: re-rodar no mesmo
  * dia sem vagas novas não envia nada.
  */
-import { and, eq, desc, notInArray } from "drizzle-orm";
+import { and, eq, desc, notInArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { jobs as jobsTable, seenJobs, users } from "@/lib/db/schema";
 import type { Job } from "@/lib/db/schema";
@@ -50,7 +50,13 @@ async function sendEmail(to: string, subject: string, html: string): Promise<voi
 export async function runDigest(): Promise<{ sent: boolean; count: number }> {
   const db = getDb();
   const email = requireEnv("ALLOWED_EMAIL");
-  const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  // lower() nos dois lados: o seed grava e-mail minúsculo; sem normalizar aqui,
+  // um ALLOWED_EMAIL com maiúscula não acharia o user e o digest sairia vazio.
+  const [user] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(sql`lower(${users.email}) = ${email.toLowerCase()}`)
+    .limit(1);
   if (!user) {
     console.warn("[digest] nenhum usuário no banco — faça login uma vez antes do 1º digest.");
     return { sent: false, count: 0 };

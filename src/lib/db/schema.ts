@@ -31,8 +31,13 @@ export const users = pgTable(
     username: text("username"),
     passwordHash: text("password_hash"),
   },
-  // UNIQUE case-insensitive; o Postgres permite múltiplos NULL, então users sem username não colidem.
-  (t) => [uniqueIndex("user_username_lower_idx").on(sql`lower(${t.username})`)],
+  (t) => [
+    // UNIQUE case-insensitive; o Postgres permite múltiplos NULL, então users sem username não colidem.
+    uniqueIndex("user_username_lower_idx").on(sql`lower(${t.username})`),
+    // e-mail é o eixo de identidade (login, upsert do seed, allowlist, digest):
+    // UNIQUE case-insensitive garante "1 linha por e-mail" no banco, não só no código.
+    uniqueIndex("user_email_lower_idx").on(sql`lower(${t.email})`),
+  ],
 );
 
 export const accounts = pgTable(

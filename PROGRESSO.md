@@ -7,9 +7,10 @@
 ## Onde estamos AGORA
 
 - **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 13).
-- **HEAD:** Onda 10 (digest diário) commitada (`ca663b5`) e verificada ao vivo (console: 50 vagas → e-mail 21KB). Feitas: **7, 8 (código), 10**. Rodrigo autorizou **adiantar 10–12** enquanto providencia os gates. Engine A+ literal LIGADO (run `a220b9f5`).
-- **Ponto de retomada:** **Onda 11 (`api/recruiter/draft`, LITE)** → depois **Onda 12 (PWA)**. Pendentes de gate: **#1** chaves JSearch (Subscribe rapidapi) + Adzuna (cadastro developer.adzuna.com) p/ fechar a Onda 8 ao vivo; **#2** perfil/CV do Rodrigo p/ a Onda 9; **#3** GO de deploy (Onda 13).
-- **Suíte:** 223/223 verde · tsc/lint/build limpos · Neon com 712 vagas.
+- **HEAD:** Ondas **11 (recruiter) + 12 (PWA)** commitadas (`a821833`). A **esteira A+ (tool Workflow, 17 agentes)** auditou as Ondas 7–12; achados aplicados (fix crítico do middleware que bloqueava o PWA incluso). Feitas: **7, 8 (código), 10, 11, 12**. Engine A+ literal LIGADO (run `a220b9f5`).
+- **⚠️ EXECUÇÃO:** a Pipeline A+ roda via **tool Workflow** (esteira de agentes paralelos + juiz cego), NUNCA execução manual no contexto principal. Ondas 9 e 13 devem ser implementadas pela esteira. Ver `errors/pipeline-a+-exige-workflow-esteira-nunca-execucao-manual.md`.
+- **Ponto de retomada:** **GATES do Rodrigo** — **#1** chaves JSearch (Subscribe rapidapi) + Adzuna (cadastro developer.adzuna.com) → fecha Onda 8 ao vivo; **#2** perfil/CV → Onda 9 (CV); **#3** GO de deploy → Onda 13.
+- **Suíte:** 238/238 verde · tsc/lint/build limpos · Neon 712 vagas · PWA instalável (manifest + ícones HTTP 200, console limpo).
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
 
 ## Como a Pipeline A+ executa cada onda
@@ -42,8 +43,8 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | 8 | `sources/{jooble,jsearch,adzuna}` + `fetchJsonWithRetry` (Google for Jobs cobre LinkedIn/Indeed) | PADRÃO | 3 | `5f8f773` | 🟡 **código ✅; Jooble 149 ao vivo; JSearch/Adzuna = GATE #1** |
 | 9 | `cv/tailor` (adapter LLM gemini\|anthropic\|groq) + `api/cv/tailor` | CRÍTICA (anti-invenção) | 1 | — | ☐ KEY-DEP (`GEMINI` ✅; aguarda perfil do Rodrigo) |
 | 10 | `notify/digest` + `.github/workflows/cron-diario.yml` | PADRÃO | 1 | `ca663b5` | ✅ **ao vivo (console): 50 vagas → e-mail 21KB** |
-| 11 | `api/recruiter/draft` (link genérico + rascunho) | LITE | 1 | — | ☐ key-indep |
-| 12 | PWA (`public/manifest.json` + service worker) | LITE-PADRÃO + a11y | 1 | — | ☐ key-indep |
+| 11 | `api/recruiter/draft` (link recrutadores + rascunho) | LITE | 1 | `f25dd0a` | ✅ |
+| 12 | PWA (`app/manifest.ts` + ícones + service worker) + fix matcher | LITE-PADRÃO + a11y | 1 | `e6f5278` | ✅ **ao vivo: manifest+ícones 200, console limpo** |
 | 13 | Repo GitHub + push + Actions secrets + deploy Vercel + env prod + verificação READY + GET | CRÍTICA (produção, GATE humano) | 1 | — | ☐ |
 
 **Ordem de retomada:** **4 (auth)** → **5 (UI)** → **6 (busca + validação no clique)** → **7 (scrapers BR, key-indep)** → **8 (agregadores)** → **9 (CV)** → **10 (digest)** → **11 (recruiter)** → **12 (PWA)** → **13 (deploy — GATE humano)**.
@@ -77,6 +78,9 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | `9ac0c81` | feat(scrape): Onda 7 — scrapers BR Vagas.com + InfoJobs (cheerio + retry, TDD) |
 | `5f8f773` | feat(sources): Onda 8 — agregadores Jooble + JSearch + Adzuna (TDD) |
 | `ca663b5` | feat(notify): Onda 10 — digest diário por e-mail + workflow cron (TDD) |
+| `f25dd0a` | feat(recruiter): Onda 11 — rascunho de abordagem + link de recrutadores (TDD) |
+| `e6f5278` | feat(pwa): Onda 12 — PWA instalável (manifest/ícones/SW) + fix matcher (TDD) |
+| `a821833` | refactor(sources): aplica auditoria da esteira A+ (collect testado + timeout API) |
 
 ## PENDENTE — chaves do Rodrigo (B) [bloqueia ao-vivo das ondas 7, 8, 9]
 
@@ -128,7 +132,7 @@ Feito isso, `pnpm scrape` coleta JSearch + Adzuna ao vivo (ajusto o schema se a 
 
 ## Como retomar (comando)
 
-Estado: **HEAD `ca663b5` (Onda 10 ✅)**. Feitas: 0–8 (8 = código; Jooble ao vivo) + 10 · suíte 223/223 · branch `feat/mvp-foundation`. Em andamento autônomo: **11 (recruiter) → 12 (PWA)**. Aguardam input do Rodrigo: 8-verify + 9 (gates #1/#2) e 13 (GO, gate #3). Engine A+ literal: `pipe_emit.py` (em `C:\tmp`) com o python `~/.claude/pipeline/.venv/Scripts/python.exe`; run `a220b9f5`; modo copilable.
+Estado: **HEAD `a821833`**. Feitas: 0–8 (8 = código; Jooble ao vivo) + **10, 11, 12** · esteira A+ (Workflow) auditou 7–12 e achados aplicados · suíte 238/238 · branch `feat/mvp-foundation`. Faltam só os **3 GATES do Rodrigo**: #1 chaves JSearch/Adzuna (Onda 8 ao vivo), #2 perfil/CV (Onda 9), #3 GO (Onda 13). **Onda 9 e 13 → implementar pela ESTEIRA (tool Workflow), nunca manual** (ver errors/pipeline-a+...). Engine A+ literal: `pipe_emit.py` (em `C:\tmp`) com o python `~/.claude/pipeline/.venv/Scripts/python.exe`; run `a220b9f5`; modo copilable.
 
 **Mensagem exata para colar na nova sessão (no terminal do projeto):**
 

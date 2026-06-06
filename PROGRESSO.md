@@ -7,9 +7,9 @@
 ## Onde estamos AGORA
 
 - **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 13).
-- **HEAD:** Onda 7 (scrapers BR) **commitada (`9ac0c81`) e verificada ao vivo** — Vagas.com **164** + InfoJobs **120** vagas reais no Neon (669 coletadas, 646 únicas). Engine A+ literal LIGADO (run `a220b9f5`).
-- **Ponto de retomada:** **Onda 8 (agregadores `sources/{adzuna,jooble,jsearch}`)** — KEY-DEP. **GATE HUMANO #1:** chaves JSearch (Subscribe rapidapi) + Adzuna (cadastro). Implementar os 3 connectors por fixture (sem chave); verificar ao vivo o que tiver chave (Jooble) e parar p/ as faltantes.
-- **Suíte:** 188/188 verde · tsc/lint/build limpos.
+- **HEAD:** Onda 8 (agregadores) **código commitado (`5f8f773`)** — Jooble **149** vagas reais ao vivo. Neon com **712 únicas** (gupy 203 + vagas 164 + infojobs 120 + jooble 149 + greenhouse 100). **GATE #1 atingido.** Engine A+ literal LIGADO (run `a220b9f5`).
+- **Ponto de retomada:** **GATE HUMANO #1** — JSearch (Subscribe no rapidapi.com; `RAPIDAPI_KEY` já existe, só assinar a API) + Adzuna (cadastro grátis em developer.adzuna.com → `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` no `.env.local`). Código pronto e testado; só falta a verificação ao vivo. Depois: **Onda 9 (CV `cv/tailor`)** — gate #2 (perfil do Rodrigo; `GEMINI_API_KEY` já existe).
+- **Suíte:** 216/216 verde · tsc/lint/build limpos.
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
 
 ## Como a Pipeline A+ executa cada onda
@@ -39,7 +39,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | 5 | UI busca: **Curso (select taxonomia) → Área (chips dependentes)** + Estado + Tipo + cards/badge/estados | PADRÃO + design + a11y | 1 | ✅ | ✅ **ao vivo: curso→área dinâmico + filtro real** |
 | 6 | `api/jobs/[id]/validate` (validação no clique: anti-SSRF redirect-manual + `classifyJobStatus` + persist) — busca ficou server-side na Onda 5 | CRÍTICA | 1 | ✅ | ✅ **ao vivo: vaga real → "open"; rota protegida** |
 | 7 | **Scrapers BR seletivos** `sources/{vagas,infojobs}.ts` + `http.ts` (HTML público, retry, kill-switch) | PADRÃO | 2 (Catho→débito) | `9ac0c81` | ✅ **ao vivo: Vagas 164 + InfoJobs 120** |
-| 8 | `sources/{adzuna,jooble,jsearch}` agregadores (Google for Jobs cobre LinkedIn/Indeed) | PADRÃO | 3 paralelas | — | ☐ KEY-DEP (Jooble ✅; JSearch 403/Adzuna pend.) |
+| 8 | `sources/{jooble,jsearch,adzuna}` + `fetchJsonWithRetry` (Google for Jobs cobre LinkedIn/Indeed) | PADRÃO | 3 | `5f8f773` | 🟡 **código ✅; Jooble 149 ao vivo; JSearch/Adzuna = GATE #1** |
 | 9 | `cv/tailor` (adapter LLM gemini\|anthropic\|groq) + `api/cv/tailor` | CRÍTICA (anti-invenção) | 1 | — | ☐ KEY-DEP (`GEMINI` ✅; aguarda perfil do Rodrigo) |
 | 10 | `notify/digest` + `.github/workflows/cron-diario.yml` | PADRÃO | 1 | — | ☐ KEY-DEP (`RESEND` ✅) |
 | 11 | `api/recruiter/draft` (link genérico + rascunho) | LITE | 1 | — | ☐ key-indep |
@@ -75,6 +75,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | `b1b2873` | feat(busca): Onda 5 — UI busca Curso→Área (taxonomia) + cards (TDD) |
 | `ec5d315` | feat(freshness): Onda 6 — validação no clique (anti-SSRF + persist, TDD) |
 | `9ac0c81` | feat(scrape): Onda 7 — scrapers BR Vagas.com + InfoJobs (cheerio + retry, TDD) |
+| `5f8f773` | feat(sources): Onda 8 — agregadores Jooble + JSearch + Adzuna (TDD) |
 
 ## PENDENTE — chaves do Rodrigo (B) [bloqueia ao-vivo das ondas 7, 8, 9]
 
@@ -97,13 +98,20 @@ Preencher no `.env.local` (já tem Neon + AUTH_SECRET). Sem elas, o código exis
 - **Descoberta:** InfoJobs "fetch failed" era `UND_ERR_CONNECT_TIMEOUT` transitório do undici (não bloqueio) → retry resolveu (0→120). Aprendizado em `errors/fetch-failed-undici-connect-timeout-nao-e-bloqueio.md`.
 - **Catho:** TECH_DEBT #10 (404 nos padrões de busca; provável SPA/API). Retry nos ATS: TECH_DEBT #11.
 
-## Onda 8 — plano (próxima · KEY-DEP · GATE HUMANO #1)
+## Onda 8 — código FECHADO (2026-06-06 · commit `5f8f773`) · GATE HUMANO #1
 
-`src/lib/sources/{adzuna,jooble,jsearch}.ts` — connectors de agregadores (cada um `parseX(json)` testado por fixture + `fetchXJobs(query)` com a chave), integrados no `daily.ts`. Google for Jobs (via JSearch) cobre LinkedIn/Indeed.
-1. TDD por fixture de resposta de API (sem precisar de chave) p/ os 3 parsers.
-2. `fetchXJobs` lê a chave de `env.ts`; ausência de chave = fonte pulada (não quebra), com aviso.
-3. Ao vivo: Jooble se `JOOBLE_API_KEY` existir; **PARAR** p/ Rodrigo criar JSearch (Subscribe rapidapi → `RAPIDAPI_KEY`) + Adzuna (cadastro → `ADZUNA_APP_ID`/`ADZUNA_APP_KEY`).
-Regras: usar a taxonomia para os termos; respeitar rate-limit grátis de cada API.
+`sources/{jooble,jsearch,adzuna}.ts` (parser por fixture + fetch com retry) + `fetchJsonWithRetry` no `http.ts`, ligados no `daily.ts` (`collectQuerySource` unificado, kill-switch que distingue fonte inacessível de falha pontual). Schema de entrada tolerante + `rawJobSchema.safeParse` na saída (resiliência de item).
+- **Jooble:** ✅ 149 vagas ao vivo. `sourceJobId` vem do link (id numérico trunca por MAX_SAFE_INTEGER). Cobertura BR fraca → TECH_DEBT #12.
+- **JSearch/Adzuna:** código pronto e testado por fixture da doc; **verificação ao vivo bloqueada** (gate). Validar shape real quando a chave chegar → TECH_DEBT #14.
+
+### O que o Rodrigo precisa fazer (GATE #1)
+1. **JSearch:** rapidapi.com → API "JSearch" (jsearch.p.rapidapi.com) → **Subscribe** no plano Basic (grátis). `RAPIDAPI_KEY` já está no `.env.local`; falta só assinar a API (hoje retorna 403 "not subscribed").
+2. **Adzuna:** cadastro grátis em developer.adzuna.com → criar app → adicionar `ADZUNA_APP_ID` e `ADZUNA_APP_KEY` no `.env.local`.
+Feito isso, `pnpm scrape` coleta JSearch + Adzuna ao vivo (ajusto o schema se a resposta real divergir da fixture da doc).
+
+## Onda 9 — plano (CV · CRÍTICA anti-invenção · GATE HUMANO #2)
+
+`cv/tailor` (adapta o CV base do Rodrigo a uma vaga, com guardrail anti-invenção) + `api/cv/tailor`. `GEMINI_API_KEY` já existe; código agnóstico (anthropic|groq). **Gate #2:** o CV/perfil-base do Rodrigo (texto do currículo) para o tailoring adaptar e o guardrail semântico (`cv/semanticGuardrail`, já existe da Onda 2b) ser testado com dados reais.
 
 ## Decisões travadas (log — não reabrir sem motivo)
 
@@ -119,7 +127,7 @@ Regras: usar a taxonomia para os termos; respeitar rate-limit grátis de cada AP
 
 ## Como retomar (comando)
 
-Estado: **HEAD `9ac0c81` (Onda 7 ✅)**. Ondas 0–7 commitadas e verificadas ao vivo · suíte 188/188 · branch `feat/mvp-foundation`. Próximo: **Onda 8** (seção acima · GATE HUMANO #1 das chaves). Engine A+ literal: rodar `pipe_emit.py` (em `C:\tmp`) com o python `~/.claude/pipeline/.venv/Scripts/python.exe`; run `a220b9f5`; modo copilable.
+Estado: **HEAD `5f8f773` (Onda 8 código ✅)**. Ondas 0–7 ✅ + Onda 8 (código; Jooble ao vivo) · suíte 216/216 · branch `feat/mvp-foundation`. **PARADO no GATE #1** (chaves JSearch/Adzuna — ver seção "Onda 8"). Após o gate: `pnpm scrape` p/ verificar JSearch/Adzuna ao vivo → **Onda 9 (CV, gate #2)** → 10 (digest, RESEND ✅) → 11 (recruiter) → 12 (PWA) → 13 (deploy, gate #3). Engine A+ literal: `pipe_emit.py` (em `C:\tmp`) com o python `~/.claude/pipeline/.venv/Scripts/python.exe`; run `a220b9f5`; modo copilable.
 
 **Mensagem exata para colar na nova sessão (no terminal do projeto):**
 

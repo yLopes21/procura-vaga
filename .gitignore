@@ -50,3 +50,5 @@ supabase/.temp/
 
 # Artefatos do Playwright MCP (screenshots/snapshots de verificação)
 .playwright-mcp/
+
+.vercel

@@ -35,6 +35,9 @@ Adicione items com: data, descrição, severidade, e esforço estimado.
 | 16 | 2026-06-06 | Onda 10: workflow `cron-diario.yml` não alerta se `scrape:ci` coletar 0 vagas (exit 0 com todas as fontes falhando → run "verde"). Adicionar step de sanidade (count(jobs active) > 0) antes do digest. | 🟢 | ~30min | Pendente |
 | 17 | 2026-06-06 | Onda 13 (cron review P2-4): `CRON_SECRET` é `optional()` em todo ambiente; `AUTH_SECRET` é obrigatório em prod. Tornar `CRON_SECRET` obrigatório em produção (descoberta cedo) — mas antes garantir a env em TODOS os ambientes Vercel (Preview inclusive), senão quebra o build de preview. | 🟢 | ~20min | Pendente |
 | 18 | 2026-06-06 | Onda 13: cron Vercel roda coleta+digest no Neon compartilhado dev↔prod. NÃO rodar `pnpm scrape`/`digest` local apontando p/ o mesmo banco (marca seen / fecha vagas de prod). Separar banco dev quando deixar de ser projeto de 1 usuário. | 🟢 | — | Pendente |
+| 19 | 2026-06-06 | Login senha: `rateLimit.ts` é in-memory (Map) — best-effort; em serverless não compartilha entre instâncias nem sobrevive a cold start, e o Map não tem eviction (cresce em processo longo). Gate real = senha + sem-signup + anti-enumeração. Migrar p/ store compartilhado (ex.: Upstash) se virar multiusuário. | 🟢 | ~1h | Pendente |
+| 20 | 2026-06-06 | Login senha: `authorize` (auth.ts) e `signInWithPassword` (action) sem teste unitário (I/O: banco + signN; verificados AO VIVO — login certo entra, errado nega, e-mail entra). Cobrir com mock de banco/signIn se a lógica crescer. | 🟡 | ~1.5h | Pendente |
+| 21 | 2026-06-06 | Login senha: senha do `procuravaga` (`achavaga0123`) é FRACA (a pedido). Trocar por forte com `pnpm seed:user` (SEED_PASSWORD via env). | 🟡 | ~10min | Pendente |
 
 ## Items Resolvidos
 

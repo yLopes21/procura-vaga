@@ -31,9 +31,8 @@ const schema = z.object({
   // App
   NEXT_PUBLIC_APP_URL: z.string().default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  // Transporte do magic-link: "console" imprime o link no terminal (dev, sem
-  // Resend); "resend" envia de verdade. A escolha segura por ambiente vive em
-  // getEmailProvider() (Onda Auth) — nunca cai no console em produção.
+  // Transporte de e-mail do DIGEST diário (o login agora é por senha, não usa e-mail):
+  // "console" loga em dev; "resend" envia de verdade (prod). Nunca cai no console em produção.
   EMAIL_TRANSPORT: z.enum(["console", "resend"]).default("console"),
 });
 

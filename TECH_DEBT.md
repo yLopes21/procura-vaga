@@ -26,6 +26,8 @@ Adicione items com: data, descrição, severidade, e esforço estimado.
 | 7 | 2026-06-05 | Onda 5: só `administracao` tem `subareas` no `taxonomy-top20.json`. Popular subáreas dos outros 11 cursos (área dependente fica vazia neles hoje). | 🟡 | ~2h | Pendente |
 | 8 | 2026-06-05 | Onda 6: `/api/jobs/[id]/validate` sem sessão retorna 307 (redirect do middleware), não 401. Inócuo (1 usuário, card é fail-open); ideal seria o middleware responder 401 para rotas `/api`. | 🟢 | ~30min | Pendente |
 | 9 | 2026-06-05 | Dados (Onda 2a `location`): algumas cidades caem na UF errada (ex.: "Patos"/"João Pessoa" → BA em vez de PB). Revisar dicionário cidade→UF. | 🟡 | ~2h | Pendente |
+| 10 | 2026-06-06 | Onda 7: scraper do **Catho** não implementado — `/vagas/estagio-administracao/` e variações dão 404 (sem Cloudflare); o padrão de busca real precisa ser descoberto (provável SPA/API interna). Vagas.com + InfoJobs já cobrem o BR; Catho é incremento. | 🟢 | ~3h | Pendente |
+| 11 | 2026-06-06 | Onda 7: `fetchHtmlWithRetry` (retry+backoff p/ `UND_ERR_CONNECT_TIMEOUT` transitório) só está nos scrapers (vagas/infojobs). Os connectors ATS (greenhouse/lever/ashby/workable/gupy) ainda fazem fetch sem retry — `greenhouse:nubank` falhou 1× por isso. Migrar os ATS para o helper compartilhado. | 🟡 | ~1h | Pendente |
 
 ## Items Resolvidos
 

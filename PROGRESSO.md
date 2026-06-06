@@ -2,14 +2,14 @@
 
 > Plano canônico: **`PLANEJAMENTO.md`**. Arquitetura: **`ARCHITECTURE.md`**.
 > Este arquivo é o **estado de execução** para retomar com `/pipeline` exatamente onde paramos — à prova de sessão fechada.
-> Última atualização: **2026-06-05**.
+> Última atualização: **2026-06-06**.
 
 ## Onde estamos AGORA
 
-- **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 12).
-- **HEAD:** Onda 6 (validação no clique) **commitada e verificada ao vivo** (vaga real → "open" via fetch + anti-SSRF). Engine A+ literal LIGADO (run `a220b9f5`).
-- **Ponto de retomada:** **Onda 7 (scrapers BR seletivos)** — `scrape/{vagas,infojobs,catho}.ts`, key-independent (scraping não usa chave).
-- **Suíte:** 161/161 verde · tsc/lint/build limpos.
+- **Branch:** `feat/mvp-foundation` (ainda sem remote/GitHub; criar repo na Onda 13).
+- **HEAD:** Onda 7 (scrapers BR) **commitada (`9ac0c81`) e verificada ao vivo** — Vagas.com **164** + InfoJobs **120** vagas reais no Neon (669 coletadas, 646 únicas). Engine A+ literal LIGADO (run `a220b9f5`).
+- **Ponto de retomada:** **Onda 8 (agregadores `sources/{adzuna,jooble,jsearch}`)** — KEY-DEP. **GATE HUMANO #1:** chaves JSearch (Subscribe rapidapi) + Adzuna (cadastro). Implementar os 3 connectors por fixture (sem chave); verificar ao vivo o que tiver chave (Jooble) e parar p/ as faltantes.
+- **Suíte:** 188/188 verde · tsc/lint/build limpos.
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
 
 ## Como a Pipeline A+ executa cada onda
@@ -38,7 +38,7 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | 4 | Auth.js magic-link + middleware + allowlist (dupla, fail-closed) | CRÍTICA | 1 | ✅ | ✅ **login ao vivo: permitido entra, intruso negado (AccessDenied)** |
 | 5 | UI busca: **Curso (select taxonomia) → Área (chips dependentes)** + Estado + Tipo + cards/badge/estados | PADRÃO + design + a11y | 1 | ✅ | ✅ **ao vivo: curso→área dinâmico + filtro real** |
 | 6 | `api/jobs/[id]/validate` (validação no clique: anti-SSRF redirect-manual + `classifyJobStatus` + persist) — busca ficou server-side na Onda 5 | CRÍTICA | 1 | ✅ | ✅ **ao vivo: vaga real → "open"; rota protegida** |
-| 7 | **Scrapers BR seletivos** `scrape/{vagas,infojobs,catho}.ts` (HTML público, kill-switch por fonte) | PADRÃO | 3 paralelas | — | ☐ **key-indep** (scraping não usa chave) |
+| 7 | **Scrapers BR seletivos** `sources/{vagas,infojobs}.ts` + `http.ts` (HTML público, retry, kill-switch) | PADRÃO | 2 (Catho→débito) | `9ac0c81` | ✅ **ao vivo: Vagas 164 + InfoJobs 120** |
 | 8 | `sources/{adzuna,jooble,jsearch}` agregadores (Google for Jobs cobre LinkedIn/Indeed) | PADRÃO | 3 paralelas | — | ☐ KEY-DEP (Jooble ✅; JSearch 403/Adzuna pend.) |
 | 9 | `cv/tailor` (adapter LLM gemini\|anthropic\|groq) + `api/cv/tailor` | CRÍTICA (anti-invenção) | 1 | — | ☐ KEY-DEP (`GEMINI` ✅; aguarda perfil do Rodrigo) |
 | 10 | `notify/digest` + `.github/workflows/cron-diario.yml` | PADRÃO | 1 | — | ☐ KEY-DEP (`RESEND` ✅) |
@@ -70,6 +70,11 @@ Cada onda recebe **trilha proporcional ao risco** + roda partes independentes em
 | `8de1d0c` | feat(sources): Onda 1c — connector Gupy (portal de busca BR) + hint de tipo |
 | `d80e1ae` | feat(jobs): Onda 2a — normalização de local e chave de dedup (TDD) |
 | `b20d8f0` | feat(cv,taxonomy): Onda 2b — taxonomia, guardrail semântico e round-trip PDF |
+| `b316437` | feat(ingest): Onda 3 — coleta diária (toNewJob + listingDiff + daily, TDD) |
+| `e05a12a` | feat(auth): Onda 4 — login magic-link + allowlist fail-closed (Auth.js v5, TDD) |
+| `b1b2873` | feat(busca): Onda 5 — UI busca Curso→Área (taxonomia) + cards (TDD) |
+| `ec5d315` | feat(freshness): Onda 6 — validação no clique (anti-SSRF + persist, TDD) |
+| `9ac0c81` | feat(scrape): Onda 7 — scrapers BR Vagas.com + InfoJobs (cheerio + retry, TDD) |
 
 ## PENDENTE — chaves do Rodrigo (B) [bloqueia ao-vivo das ondas 7, 8, 9]
 
@@ -85,19 +90,20 @@ Preencher no `.env.local` (já tem Neon + AUTH_SECRET). Sem elas, o código exis
 
 > Já em `.env.local`: `DATABASE_URL` (Neon), `AUTH_SECRET`, `ALLOWED_EMAIL`, `EMAIL_FROM`, `LLM_PROVIDER=gemini`, `NEXT_PUBLIC_APP_URL`.
 
-## Onda 7 — PRONTA para executar (descoberta feita 2026-06-05)
+## Onda 7 — FECHADA (2026-06-06 · commit `9ac0c81`)
 
-Trilha PADRÃO · **key-independent** (scraping HTML, não usa chave). Viabilidade testada AO VIVO (curl com User-Agent de browser):
-- **Vagas.com** → HTTP 200, ~158 KB, 542 menções de vaga, **sem Cloudflare/captcha → RASPÁVEL**. Busca: `https://www.vagas.com.br/vagas-de-<termo>` (ex.: `vagas-de-estagio+administracao`).
-- **InfoJobs** → HTTP 200, ~240 KB, **sem bloqueio → RASPÁVEL**. Busca: `https://www.infojobs.com.br/empregos.aspx?palabra=<termo>`.
-- **Catho** → `/vagas/estagio-administracao/` deu 404 (NÃO bloqueia); achar o padrão de busca correto e validar ao vivo antes de implementar — se difícil, vira TECH_DEBT (não bloqueia a onda).
+`src/lib/sources/{vagas,infojobs,http}.ts` + testes + fixtures. Parser puro (cheerio) testado por fixture HTML real reduzida; `fetchHtmlWithRetry` (retry+backoff) no `http.ts`; integrados no `daily.ts` com kill-switch por fonte + delay com jitter. **Ao vivo: Vagas 164 + InfoJobs 120 vagas reais no Neon.**
+- Seletores: Vagas `li.vaga` (título no attr `title`, id `data-id-vaga`, empresa `.emprVaga`, nível `.nivelVaga`; local NÃO exposto no card → null). InfoJobs `div.js_rowCard[data-href]` (título `.js_vacancyTitle`, empresa `a[href*="/empresa-"]`, local pelo padrão "Cidade - UF", data `.js_date[data-value]`).
+- **Descoberta:** InfoJobs "fetch failed" era `UND_ERR_CONNECT_TIMEOUT` transitório do undici (não bloqueio) → retry resolveu (0→120). Aprendizado em `errors/fetch-failed-undici-connect-timeout-nao-e-bloqueio.md`.
+- **Catho:** TECH_DEBT #10 (404 nos padrões de busca; provável SPA/API). Retry nos ATS: TECH_DEBT #11.
 
-Passos exatos:
-1. `src/lib/scrape/vagas.ts` e `src/lib/scrape/infojobs.ts` — cada um implementa `JobSource` (`source`, `fetchJobs(query) → RawJobFromATS[]`) com parse via **cheerio** (já instalado): seletor do card → `title`/`company`/`applyUrl`/`locationRaw`; `employmentTypeHint` quando o site expõe. **TDD por fixture HTML** (salvar HTML real em `__fixtures__/`, testar o parser sem rede).
-2. `data/companies-watchlist.json` — adicionar bloco de queries de scraping (termos por curso, ex.: "estagio administracao", "estagio marketing"…).
-3. `scripts/daily.ts` `collectAll` — chamar os scrapers junto dos connectors; o **kill-switch por fonte** (try/catch existente) garante que uma fonte que bloqueie não derrube as outras.
-4. Verificação ao-vivo: `pnpm scrape` → vagas reais de Vagas/InfoJobs no Neon; conferir contagem por fonte.
-Regras: usar a taxonomia para os termos; nunca raspar logado; respeitar delays/jitter.
+## Onda 8 — plano (próxima · KEY-DEP · GATE HUMANO #1)
+
+`src/lib/sources/{adzuna,jooble,jsearch}.ts` — connectors de agregadores (cada um `parseX(json)` testado por fixture + `fetchXJobs(query)` com a chave), integrados no `daily.ts`. Google for Jobs (via JSearch) cobre LinkedIn/Indeed.
+1. TDD por fixture de resposta de API (sem precisar de chave) p/ os 3 parsers.
+2. `fetchXJobs` lê a chave de `env.ts`; ausência de chave = fonte pulada (não quebra), com aviso.
+3. Ao vivo: Jooble se `JOOBLE_API_KEY` existir; **PARAR** p/ Rodrigo criar JSearch (Subscribe rapidapi → `RAPIDAPI_KEY`) + Adzuna (cadastro → `ADZUNA_APP_ID`/`ADZUNA_APP_KEY`).
+Regras: usar a taxonomia para os termos; respeitar rate-limit grátis de cada API.
 
 ## Decisões travadas (log — não reabrir sem motivo)
 
@@ -113,8 +119,8 @@ Regras: usar a taxonomia para os termos; nunca raspar logado; respeitar delays/j
 
 ## Como retomar (comando)
 
-Estado: **HEAD `ec5d315` (Onda 6 ✅)**. Ondas 0–6 commitadas e verificadas ao vivo · suíte 161/161 · branch `feat/mvp-foundation` · working tree limpo. Próximo: **Onda 7** (seção acima). Engine A+ literal: rodar `pipe_emit.py` (helper em `C:\tmp` ou recriar) com CWD em `~/.claude/pipeline/engine`, `PIPELINE_PROJECT_PATH` = `<projeto>/.pipeline`, modo copilable.
+Estado: **HEAD `9ac0c81` (Onda 7 ✅)**. Ondas 0–7 commitadas e verificadas ao vivo · suíte 188/188 · branch `feat/mvp-foundation`. Próximo: **Onda 8** (seção acima · GATE HUMANO #1 das chaves). Engine A+ literal: rodar `pipe_emit.py` (em `C:\tmp`) com o python `~/.claude/pipeline/.venv/Scripts/python.exe`; run `a220b9f5`; modo copilable.
 
 **Mensagem exata para colar na nova sessão (no terminal do projeto):**
 
-> /loop Continue o projeto Procura-Vaga com a Pipeline A+ no modo ENGINE A+ LITERAL (handoff + telemetria via ~/.claude/pipeline, como combinamos). SEMPRE comece lendo PROGRESSO.md e ~/.claude/memory/errors/ antes de tocar código; retome da próxima onda pendente (hoje a Onda 7) e execute na ordem do mapa até a Onda 13, SEM parar entre fases. Por onda: TDD (teste falhando antes), gate test+tsc+lint+build, code-review no diff antes do commit, verificação ao vivo onde há superfície, emitir handoff no engine a cada transição, commit atômico em PT-BR e ATUALIZAR o PROGRESSO.md ao fechar a onda. Pare SÓ nos 3 gates reais: (1) chaves JSearch (Subscribe) + Adzuna (cadastro) na Onda 8; (2) meu CV/perfil na Onda 9; (3) meu GO de deploy na Onda 13. Não peça aprovação entre ondas.
+> /loop Continue o projeto Procura-Vaga com a Pipeline A+ no modo ENGINE A+ LITERAL (handoff + telemetria via ~/.claude/pipeline, como combinamos). SEMPRE comece lendo PROGRESSO.md e ~/.claude/memory/errors/ antes de tocar código; retome da próxima onda pendente (hoje a Onda 8) e execute na ordem do mapa até a Onda 13, SEM parar entre fases. Por onda: TDD (teste falhando antes), gate test+tsc+lint+build, code-review no diff antes do commit, verificação ao vivo onde há superfície, emitir handoff no engine a cada transição, commit atômico em PT-BR e ATUALIZAR o PROGRESSO.md ao fechar a onda. Pare SÓ nos 3 gates reais: (1) chaves JSearch (Subscribe) + Adzuna (cadastro) na Onda 8; (2) meu CV/perfil na Onda 9; (3) meu GO de deploy na Onda 13. Não peça aprovação entre ondas.

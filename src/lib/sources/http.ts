@@ -6,8 +6,10 @@
 export const BROWSER_UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
 
-/** Timeout padrão de scraping (ms) — páginas HTML completas são maiores que JSON de ATS. */
+/** Timeout de scraping (ms) — páginas HTML completas são maiores que JSON de API. */
 export const SCRAPE_TIMEOUT_MS = 20_000;
+/** Timeout de API JSON (ms) — menor; com 4 tentativas, mantém o pior caso por fonte sob o teto do cron. */
+export const API_TIMEOUT_MS = 10_000;
 
 export interface FetchHtmlOptions {
   /** Tentativas extras após a primeira (default 2 → até 3 chamadas). */
@@ -75,6 +77,6 @@ export async function fetchJsonWithRetry<T = unknown>(
   init: RequestInit = {},
   opts: FetchHtmlOptions = {},
 ): Promise<T> {
-  const res = await retryingFetch(url, init, label, opts);
+  const res = await retryingFetch(url, init, label, { timeoutMs: API_TIMEOUT_MS, ...opts });
   return (await res.json()) as T;
 }

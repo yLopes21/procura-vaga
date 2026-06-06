@@ -40,6 +40,9 @@ export function parseInfojobs(html: string): RawJobFromATS[] {
     const card = $(el);
     const href = card.attr("data-href")?.trim();
 
+    // O local ("Cidade - UF") vive num nó COM filhos (ex.: div com o texto + o span
+    // de distância), então é preciso o texto PRÓPRIO do nó (clone sem filhos) — testado
+    // por fixture real. Filtrar nós-folha (tentado) descartava o local. Custo aceitável (1×/dia).
     let locationRaw: string | null = null;
     card.find("div, span").each((_i, node) => {
       const own = clean($(node).clone().children().remove().end().text());

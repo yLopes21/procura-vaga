@@ -3,9 +3,11 @@ name: Coleta e digest diários
 # Roda a coleta (enche o catálogo) e o digest (avisa o dono das vagas novas).
 # Ativa só depois que o repo estiver no GitHub (Onda 13) e os secrets configurados.
 on:
-  schedule:
-    - cron: "0 9 * * *" # 09:00 UTC = 06:00 BRT — vagas frescas de manhã
-  workflow_dispatch: {} # permite rodar manualmente pelo painel
+  # Agendamento migrou para VERCEL CRON (vercel.json → /api/cron/daily), pois o
+  # GitHub Actions estava bloqueado por billing da conta. Mantido só como fallback
+  # manual de emergência (workflow_dispatch). Não reativar o schedule aqui sem antes
+  # remover o cron do vercel.json (senão a coleta roda 2× no mesmo banco).
+  workflow_dispatch: {}
 
 concurrency:
   group: coleta-diaria

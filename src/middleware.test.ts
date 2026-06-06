@@ -39,6 +39,14 @@ describe("middleware matcher", () => {
     expect(isProtected("/api/auth/signin")).toBe(false);
   });
 
+  it("/api/cron/ é público no middleware (auth via Bearer no handler, não sessão)", () => {
+    expect(isProtected("/api/cron/daily")).toBe(false);
+  });
+
+  it("isenção de cron é por path /api/cron/ — /api/cronX NÃO vaza como público", () => {
+    expect(isProtected("/api/cronX")).toBe(true);
+  });
+
   it("páginas e APIs do app exigem sessão", () => {
     for (const p of ["/", "/busca", "/api/recruiter/draft", "/api/jobs/abc/validate"]) {
       expect(isProtected(p), `${p} deveria ser protegido`).toBe(true);

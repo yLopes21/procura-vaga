@@ -14,6 +14,6 @@ export const config = {
   // assets do PWA por EXTENSÃO (.png/.svg/.ico/.webmanifest) — robusto a novos
   // ícones. O manifest é /manifest.webmanifest (não .json) no App Router.
   matcher: [
-    "/((?!api/auth|login|_next/static|_next/image|sw.js|manifest.webmanifest|.*\\.(?:png|svg|ico|webmanifest)$).*)",
+    "/((?!api/auth|api/cron/|login|_next/static|_next/image|sw.js|manifest.webmanifest|.*\\.(?:png|svg|ico|webmanifest)$).*)",
   ],
 };

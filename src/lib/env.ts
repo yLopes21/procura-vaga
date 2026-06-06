@@ -26,6 +26,8 @@ const schema = z.object({
   GEMINI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   GROQ_API_KEY: z.string().optional(),
+  // Cron (Vercel Cron envia "Authorization: Bearer <CRON_SECRET>" quando esta env existe)
+  CRON_SECRET: z.string().min(16).optional(),
   // App
   NEXT_PUBLIC_APP_URL: z.string().default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),

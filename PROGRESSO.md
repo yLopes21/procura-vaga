@@ -10,8 +10,18 @@
 - **HEAD:** **ONDA 13 COMPLETA — no ar + cron automático** 🚀 **https://procura-vaga.vercel.app** (repo público `github.com/yLopes21/procura-vaga`, main). **Vercel Cron** (`vercel.json` → `/api/cron/daily`, 09:00 UTC) verificado ao vivo: coleta+digest em **41s**, 893 vagas, **digest enviado (50 vagas, Resend em prod)**, endpoint 401 sem Bearer. GitHub Actions desativado (billing). Feitas **7–13**. Engine run `a220b9f5`.
 - **⚠️ EXECUÇÃO:** Pipeline A+ SEMPRE via **tool Workflow** (esteira), nunca manual. Ver `errors/pipeline-a+-exige-workflow-esteira-nunca-execucao-manual.md`.
 - **Gates abertos (INCREMENTOS, não bloqueiam o produto):** **#1** chaves JSearch (Subscribe rapidapi) + Adzuna (cadastro) = mais fontes · **#2** perfil/CV → Onda 9 (feature de currículo adaptado). Smoke-test do login = você acessa `/login` e pede o link.
-- **Suíte:** 246/246 · tsc/lint/build limpos · Neon 893 vagas · cron diário ativo (41s, cabe em qualquer plano Vercel).
+- **Suíte:** 256/256 · tsc/lint/build limpos · Neon 893 vagas · cron diário ativo (41s, cabe em qualquer plano Vercel).
 - **Banco Neon:** provisionado via Vercel Marketplace (`neon-pink-notebook`), projeto `ylopes21s-projects/procura-vaga`. 7 tabelas aplicadas. Envs em `.env.local` (gitignored).
+
+## Migração de login: magic-link → usuário/senha (pós-Onda 13)
+
+**Estado:** implementada, auditada e verificada ao vivo na branch `feat/mvp-foundation` — **`feat` está 7 commits à frente de `origin/main`**; **produção ainda roda magic-link**. Aguarda **GO de deploy** (gate humano) para o cutover em prod.
+
+- **O quê:** 2 campos (usuário **ou** e-mail + senha), sem signup (contas só via `pnpm seed:user`). scrypt (`node:crypto`), Credentials provider, JWT. 1º usuário `procuravaga` criado (senha fraca a pedido — TECH_DEBT #21).
+- **Planejada e auditada pela esteira (Workflow):** design → implementação (TDD nas peças puras) → **auditoria adversarial (13 agentes)** sobre o diff.
+- **Auditoria (run `w1h3stavr`): 8 achados → 6 confirmados, 0 P0/P1.** Todos corrigidos (commit `18f5455`) + 1 P1 extra da revisão cega (`create-user`): anti-enumeração por timing (scrypt sempre), projeção explícita, lookup do seed nos 2 eixos de unicidade, `uniqueIndex lower(email)` (migration 0002), digest em `lower(email)`, placeholder WCAG AA (claro+dark).
+- **Verificado ao vivo:** login certo entra (`/`), senha errada nega (msg única), console limpo; seed re-roda (UPDATE). Gate: 256 testes · tsc 0 · lint · build.
+- **Commits de login (à frente de `main`):** `9fb9787` schema · `f35d82e` hash · `010a690` create-user · `edd1c2b` provider · `5c6173e` UI · `ad5f9a0` limpeza · `18f5455` fixes auditoria.
 
 ## Como a Pipeline A+ executa cada onda
 

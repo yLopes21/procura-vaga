@@ -11,5 +11,14 @@
     "estagio recursos humanos",
     "jovem aprendiz administrativo",
     "trainee administracao"
+  ],
+  "_scrape_comment": "Termos das buscas de scraping HTML (Vagas.com, InfoJobs). Kill-switch por fonte no daily.ts: a 1ª falha interrompe a fonte na rodada (não martela site bloqueado).",
+  "scrapeQueries": [
+    "estagio administracao",
+    "estagio financeiro",
+    "estagio marketing",
+    "estagio recursos humanos",
+    "jovem aprendiz administrativo",
+    "trainee administracao"
   ]
 }

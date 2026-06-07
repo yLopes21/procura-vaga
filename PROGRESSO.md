@@ -15,13 +15,13 @@
 
 ## Migração de login: magic-link → usuário/senha (pós-Onda 13)
 
-**Estado:** implementada, auditada e verificada ao vivo na branch `feat/mvp-foundation` — **`feat` está 7 commits à frente de `origin/main`**; **produção ainda roda magic-link**. Aguarda **GO de deploy** (gate humano) para o cutover em prod.
+**Estado:** ✅ **EM PRODUÇÃO** desde 2026-06-06 (cutover via `vercel --prod`, deploy `dpl_CWbTBUHAf…` READY, alias `procura-vaga.vercel.app`). O magic-link saiu. **Verificado ao vivo em prod:** login certo entra (`/`), errado nega (msg única), console 0 erros.
 
 - **O quê:** 2 campos (usuário **ou** e-mail + senha), sem signup (contas só via `pnpm seed:user`). scrypt (`node:crypto`), Credentials provider, JWT. 1º usuário `procuravaga` criado (senha fraca a pedido — TECH_DEBT #21).
 - **Planejada e auditada pela esteira (Workflow):** design → implementação (TDD nas peças puras) → **auditoria adversarial (13 agentes)** sobre o diff.
 - **Auditoria (run `w1h3stavr`): 8 achados → 6 confirmados, 0 P0/P1.** Todos corrigidos (commit `18f5455`) + 1 P1 extra da revisão cega (`create-user`): anti-enumeração por timing (scrypt sempre), projeção explícita, lookup do seed nos 2 eixos de unicidade, `uniqueIndex lower(email)` (migration 0002), digest em `lower(email)`, placeholder WCAG AA (claro+dark).
 - **Verificado ao vivo:** login certo entra (`/`), senha errada nega (msg única), console limpo; seed re-roda (UPDATE). Gate: 256 testes · tsc 0 · lint · build.
-- **Commits de login (à frente de `main`):** `9fb9787` schema · `f35d82e` hash · `010a690` create-user · `edd1c2b` provider · `5c6173e` UI · `ad5f9a0` limpeza · `18f5455` fixes auditoria.
+- **Deploy:** projeto Vercel **sem Git conectado** → deploys são **manuais via `vercel --prod`** (não há preview automático). O smoke pré-cutover foi no **build de produção LOCAL** (`next start`, `NODE_ENV=production`, mesmas envs/banco). Rollback: `vercel rollback`. Commits de login: `9fb9787`→`18f5455`.
 
 ## Como a Pipeline A+ executa cada onda
 
@@ -135,7 +135,7 @@ Feito isso, `pnpm scrape` coleta JSearch + Adzuna ao vivo (ajusto o schema se a 
 
 - **Uso PESSOAL** (não comercial) → LGPD não se aplica (Art. 4º I); raspar no volume pessoal; SEM PJ, SEM páginas legais, SEM proteção de PII de terceiros.
 - **Banco: Neon** (via Vercel Marketplace), não Supabase (os 2 free do Rodrigo estão ocupados). Vercel ele já paga.
-- **Hospedado e sempre online** (PWA, abre no celular), **privado** (login único magic-link, allowlist do email do Rodrigo).
+- **Hospedado e sempre online** (PWA, abre no celular), **privado** (login **usuário/senha** — migrado do magic-link em 2026-06-06; allowlist do e-mail como 2ª barreira).
 - **Cobertura alvo ~85-95%** via APIs grátis + scraping pessoal; "65% é pouco" foi rejeitado.
 - **LLM do CV:** Gemini (grátis) por padrão; código agnóstico (anthropic|groq alternáveis).
 - **CV do perfil:** salvo na conta privada (com botão apagar) — default aceito; efêmero disponível se pedir.

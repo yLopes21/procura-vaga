@@ -38,6 +38,7 @@ Adicione items com: data, descrição, severidade, e esforço estimado.
 | 19 | 2026-06-06 | Login senha: `rateLimit.ts` é in-memory (Map) — best-effort; em serverless não compartilha entre instâncias nem sobrevive a cold start, e o Map não tem eviction (cresce em processo longo). Gate real = senha + sem-signup + anti-enumeração. Migrar p/ store compartilhado (ex.: Upstash) se virar multiusuário. | 🟢 | ~1h | Pendente |
 | 20 | 2026-06-06 | Login senha: `authorize` (auth.ts) e `signInWithPassword` (action) sem teste unitário (I/O: banco + signN; verificados AO VIVO — login certo entra, errado nega, e-mail entra). Cobrir com mock de banco/signIn se a lógica crescer. | 🟡 | ~1.5h | Pendente |
 | 21 | 2026-06-06 | Login senha: senha do `procuravaga` (`achavaga0123`) é FRACA (a pedido). Trocar por forte com `pnpm seed:user` (SEED_PASSWORD via env). | 🟡 | ~10min | Pendente |
+| 22 | 2026-06-06 | Deploy: projeto Vercel **sem Git conectado** → sem Preview Deploy automático; `vercel env add ... preview` bloqueado ("does not have a connected Git repository"); deploys 100% manuais (`vercel --prod`). Ambiente **Preview** só tem envs de banco (faltam `AUTH_SECRET`/`ALLOWED_EMAIL`, só em Production) → um preview quebraria no boot. Para CI/CD + previews reais: conectar o repo (Settings→Git) — **mas isso liga auto-deploy em push na `main`** (decisão de fluxo do Rodrigo). | 🟢 | ~30min | Pendente (decisão) |
 
 ## Items Resolvidos
 

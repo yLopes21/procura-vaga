@@ -22,8 +22,15 @@ async function main(): Promise<void> {
   if (!email) throw new Error("SEED_EMAIL ou ALLOWED_EMAIL é obrigatório (e-mail do usuário).");
   if (!password) throw new Error("SEED_PASSWORD é obrigatório (defina TEMPORARIAMENTE no .env.local).");
   if (password.length < 12) throw new Error("SEED_PASSWORD muito curta (mínimo 12 caracteres).");
-  if (/achava|0123|1234|senha|password|procuravaga/i.test(password)) {
-    console.warn("[create-user] AVISO: senha fraca (palavra/sequência comum). Recomendo trocar por uma forte via pnpm seed:user.");
+  // Heurística GENÉRICA de força — NUNCA listar a senha/usuário reais aqui (arquivo versionado).
+  const pareceFraca =
+    password.length < 16 ||
+    /^[a-z]+$/i.test(password) ||
+    /^\d+$/.test(password) ||
+    /(.)\1{3,}/.test(password) ||
+    /(1234|abcd|qwerty|senha|password)/i.test(password);
+  if (pareceFraca) {
+    console.warn("[create-user] AVISO: senha possivelmente fraca (curta ou pouca variedade). Use uma forte e única.");
   }
 
   const passwordHash = await hashPassword(password); // nunca logar isto
